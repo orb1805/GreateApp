@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import kotlin.math.sign
 
 class LaunchActivity : AppCompatActivity() {
     private lateinit var shared_prefs : SharedPreferences
@@ -13,7 +14,6 @@ class LaunchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_launch)
         //инциализация всех ресурсов
         shared_prefs = getPreferences(Context.MODE_PRIVATE)
-
     }
 
     override fun onStart() {
@@ -22,7 +22,16 @@ class LaunchActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val intent = Intent(this, LogRegActivity::class.java)
+        val intent : Intent
+        val signed = shared_prefs.getBoolean("signed", false)
+        if(signed){
+            //TODO: проверка на совпадение ранее введенного пароля с тем, что был введен до этого
+            intent = Intent(this, MainScreenActivity::class.java)
+        }
+        else{
+            intent = Intent(this, LogRegActivity::class.java)
+        }
+        //intent = Intent(this, LogRegActivity::class.java)
         startActivity(intent)
     }
 }
