@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "610477295606",
+    "firebase_url": "https://greateapp-36412.firebaseio.com",
+    "project_id": "greateapp-36412",
+    "storage_bucket": "greateapp-36412.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610477295606:android:9a5db074d4e312f89c69d7",
+        "android_client_info": {
+          "package_name": "e.roman.greateapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "610477295606-15nta8hr62h5cr0g2f1sfcb237e3b035.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "e.roman.greateapp",
+            "certificate_hash": "89fe324d1f61a615e85901b09803279447798a8e"
+          }
+        },
+        {
+          "client_id": "610477295606-b2u6i6cui8mmsutfgjb4uv5ft9l3hvia.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaknIrn9ZnOnkjahYLMe8Aw-ra0V6o-jM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "610477295606-b2u6i6cui8mmsutfgjb4uv5ft9l3hvia.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
