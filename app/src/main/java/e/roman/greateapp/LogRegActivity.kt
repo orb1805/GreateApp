@@ -28,7 +28,7 @@ class LogRegActivity : AppCompatActivity() {
         university = findViewById(R.id.university)
         date_of_birth = findViewById(R.id.date_of_birth)
         password = findViewById(R.id.password)
-        shared_prefs = getPreferences(Context.MODE_PRIVATE)
+        shared_prefs = getSharedPreferences("file", Context.MODE_PRIVATE)
     }
 
     override fun onResume() {
@@ -43,13 +43,13 @@ class LogRegActivity : AppCompatActivity() {
         val password = password.text.toString()
         user = User(login, date_of_birth, university, password)
         if(user.add_to_db()){
-            shared_prefs.edit().putBoolean("signed", true)
+            shared_prefs.edit().putBoolean("signed", true).apply()
             val intent = Intent(this, MainScreenActivity::class.java)
             startActivity(intent)
         }
         else{
             //TODO: сообщение об ошибке
-            shared_prefs.edit().putBoolean("signed", false)
+            shared_prefs.edit().putBoolean("signed", false).apply()
         }
     }
 }

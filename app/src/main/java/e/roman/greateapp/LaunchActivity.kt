@@ -13,7 +13,7 @@ class LaunchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launch)
         //инциализация всех ресурсов
-        shared_prefs = getPreferences(Context.MODE_PRIVATE)
+        shared_prefs = getSharedPreferences("file", Context.MODE_PRIVATE)
     }
 
     override fun onStart() {

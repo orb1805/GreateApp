@@ -26,22 +26,22 @@ class User {
     }
 
     fun add_to_db() : Boolean {
-        var db = FirebaseFirestore.getInstance()
+        val db = FirebaseFirestore.getInstance()
         /*var myRef = db.getReference("user")
         myRef.setValue(this.name)*/
         val user: MutableMap<String, Any> = HashMap()
-        var success = false
+        //var success = false
         user["login"] = this.login
         //user["surname"] = this.surname
         user["date_of_birth"] = this.date_of_birth
         user["university"] = this.university
         user["password"] = this.password
-        val q = suc()
+        val q = Suc()
         db.collection("users").add(user).addOnSuccessListener{ q.putA(true) }.addOnFailureListener{ q.putA(false) }
         return q.a
     }
 
-    class suc{
+    class Suc{
         public var a : Boolean = true
         fun putA(a : Boolean){
             this.a = a;
