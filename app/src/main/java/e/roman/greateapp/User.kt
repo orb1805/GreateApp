@@ -37,14 +37,7 @@ class User {
         user["university"] = this.university
         user["password"] = this.password
         val q = Suc()
-        db.collection("users").add(user).addOnSuccessListener{ q.putA(true) }.addOnFailureListener{ q.putA(false) }
+        db.collection("users").document(login).set(user).addOnSuccessListener{ q.putA(true) }.addOnFailureListener{ q.putA(false) }
         return q.a
-    }
-
-    class Suc{
-        public var a : Boolean = true
-        fun putA(a : Boolean){
-            this.a = a;
-        }
     }
 }

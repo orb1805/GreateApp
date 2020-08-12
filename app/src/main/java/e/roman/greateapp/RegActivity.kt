@@ -6,12 +6,12 @@ import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import android.widget.ShareActionProvider
 import com.google.android.material.textfield.TextInputEditText
 
-class LogRegActivity : AppCompatActivity() {
+class RegActivity : AppCompatActivity() {
 
     private lateinit var btn_reg : Button
+    private lateinit var btn_login : Button
     private lateinit var user : User
     private lateinit var login : TextInputEditText
     private lateinit var university : TextInputEditText
@@ -21,9 +21,10 @@ class LogRegActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_log_reg)
+        setContentView(R.layout.activity_reg)
 
         btn_reg = findViewById(R.id.btn_reg)
+        btn_login = findViewById(R.id.btn_login)
         login = findViewById(R.id.login)
         university = findViewById(R.id.university)
         date_of_birth = findViewById(R.id.date_of_birth)
@@ -34,6 +35,7 @@ class LogRegActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         btn_reg.setOnClickListener { this.addUser() }
+        btn_login.setOnClickListener { finish() }
     }
 
     private fun addUser(){

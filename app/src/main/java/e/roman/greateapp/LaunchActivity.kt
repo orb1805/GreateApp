@@ -29,7 +29,7 @@ class LaunchActivity : AppCompatActivity() {
             intent = Intent(this, MainScreenActivity::class.java)
         }
         else{
-            intent = Intent(this, LogRegActivity::class.java)
+            intent = Intent(this, LoginActivity::class.java)
         }
         //intent = Intent(this, LogRegActivity::class.java)
         startActivity(intent)
