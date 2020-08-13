@@ -20,6 +20,7 @@ class RegActivity : AppCompatActivity() {
 
     private val dataBase = FirebaseFirestore.getInstance()
     private lateinit var registrationButton : Button
+    private lateinit var loginButton : Button
     private lateinit var user : User
     private lateinit var firstName : TextInputEditText
     private lateinit var secondName : TextInputEditText
@@ -43,6 +44,7 @@ class RegActivity : AppCompatActivity() {
         setContentView(R.layout.activity_reg)
 
         registrationButton = findViewById(R.id.buttonRegistration)
+        loginButton = findViewById(R.id.buttonLogin)
         firstName = findViewById(R.id.textInputFirstName)
         secondName = findViewById(R.id.textInputSecondName)
         thirdName = findViewById(R.id.textInputThirdName)
@@ -65,6 +67,7 @@ class RegActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         registrationButton.setOnClickListener { this.addUser() }
+        loginButton.setOnClickListener { finish() }
         isMan.setOnClickListener {
             isWoman.isChecked = false
         }
