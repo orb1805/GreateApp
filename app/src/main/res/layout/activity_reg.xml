@@ -168,6 +168,12 @@
             android:layout_height="64dp"
             android:text="Зарегестрироваться" />
 
+        <Button
+            android:id="@+id/buttonLogin"
+            android:layout_width="234dp"
+            android:layout_height="64dp"
+            android:text="Вход" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
