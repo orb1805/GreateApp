@@ -42,7 +42,6 @@ class RegActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reg)
 
-        //test
         registrationButton = findViewById(R.id.buttonRegistration)
         firstName = findViewById(R.id.textInputFirstName)
         secondName = findViewById(R.id.textInputSecondName)
