@@ -1,43 +1,32 @@
 package e.roman.greateapp
 
-import android.content.ContentValues.TAG
-import android.util.Log
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
 
-class User {
-    private var login : String
+class User(private val login : String, private val password : String,
+           private val firstName : String, private val secondName: String,
+           private val thirdName : String, private val university : String,
+           private val birthDate : String) {
+
+    private val dataBase: FirebaseFirestore = FirebaseFirestore.getInstance()
     //private var surname : String
-    private var date_of_birth : String
-    private var university : String
-    private var password : String
     //TODO: добавить почту
-
-    constructor(name : String, date_of_birth : String, university : String, password : String){
-        this.login = name
-        //this.surname = surname
-        this.date_of_birth = date_of_birth
-        this.university = university
-        this.password = password
-    }
-
-    fun add_to_db() : Boolean {
-        val db = FirebaseFirestore.getInstance()
+    fun addToDataBase() : Boolean {
         /*var myRef = db.getReference("user")
         myRef.setValue(this.name)*/
         val user: MutableMap<String, Any> = HashMap()
-        //var success = false
         user["login"] = this.login
-        //user["surname"] = this.surname
-        user["date_of_birth"] = this.date_of_birth
-        user["university"] = this.university
         user["password"] = this.password
-        val q = Suc()
-        db.collection("users").document(login).set(user).addOnSuccessListener{ q.putA(true) }.addOnFailureListener{ q.putA(false) }
-        return q.a
+        user["first_name"] = this.firstName
+        user["second_name"] = this.secondName
+        user["third_name"] = this.thirdName
+        user["university"] = this.university
+        user["birth_date"] = this.birthDate
+        val query = DataBaseQuerySuccess()
+        dataBase.collection("users").add(user)
+            .addOnSuccessListener{ query.isSuccess = true }
+            .addOnFailureListener{ query.isSuccess = false }
+        return query.isSuccess
     }
 }
