@@ -16,7 +16,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.concurrent.thread
 
-class LogRegActivity : AppCompatActivity() {
+class RegActivity : AppCompatActivity() {
 
     private val dataBase = FirebaseFirestore.getInstance()
     private lateinit var registrationButton : Button
@@ -40,7 +40,7 @@ class LogRegActivity : AppCompatActivity() {
     @SuppressLint("JavascriptInterface")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_log_reg)
+        setContentView(R.layout.activity_reg)
 
         registrationButton = findViewById(R.id.buttonRegistration)
         firstName = findViewById(R.id.textInputFirstName)

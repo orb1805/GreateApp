@@ -12,7 +12,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_reg.*
-import kotlinx.android.synthetic.main.activity_reg.btn_login
 import java.sql.BatchUpdateException
 
 class LoginActivity : AppCompatActivity(), FireBaseListener{
