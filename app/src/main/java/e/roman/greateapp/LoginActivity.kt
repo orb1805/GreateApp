@@ -9,12 +9,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_reg.*
 import kotlinx.android.synthetic.main.activity_reg.btn_login
 import java.sql.BatchUpdateException
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), FireBaseListener{
 
     private lateinit var btn_reg : Button
     private lateinit var btn_login : Button
@@ -22,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var password : EditText
     private lateinit var shared_prefs : SharedPreferences
     private lateinit var db : FirebaseFirestore
+    //private var suc = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,24 +50,57 @@ class LoginActivity : AppCompatActivity() {
 
     private fun checkLogin(){
         val login = this.login.text.toString()
-        val password = this.password.toString()
-        val q = Suc()
-        val intent : Intent
+        val password = this.password.text.toString()
+        //val q = Suc()
+        //val intent : Intent
         db.collection("users").whereEqualTo("login", login).get().addOnSuccessListener { documents ->
             for (document in documents)
-                if(document.data["password"] == password)
-                    q.putA(true)
-                else
-                    q.putA(false)
-        }.addOnFailureListener{q.putA(false)}
-        if(q.a){
+                if(document.data["password"].toString() == password) {
+                    /*q.putA(true)
+                    q.putLogin(login)
+                    q.putDate(document.data["date_of_birth"].toString())
+                    q.putUniversity(document.data["university"].toString())
+                    q.putPassword(document.data["password"].toString())*/
+                    //this.putSuc(true)
+                    this.onSuccess(document)
+                }
+                else {
+                    //q.putA(false)
+                    //this.putSuc(false)
+                    //Toast.makeText(this, password + " = " + document.data["password"].toString(), Toast.LENGTH_SHORT).show()
+                    this.onFailure()
+                }
+        }.addOnFailureListener{/*q.putA(false) this.putSuc(false)*/ this.onFailure()
+            //Toast.makeText(this, "Ошибка доступа", Toast.LENGTH_SHORT).show()
+        }
+        //if(q.a){
+        /*if(this.suc){
             intent = Intent(this, MainScreenActivity::class.java)
             shared_prefs.edit().putBoolean("signed", true).apply()
+            shared_prefs.edit().putString("login", q.login).apply()
+            shared_prefs.edit().putString("date_of_birth", q.date_of_birth).apply()
+            shared_prefs.edit().putString("university", q.university).apply()
+            shared_prefs.edit().putString("password", q.password).apply()
             startActivity(intent)
         }
         else {
             Toast.makeText(this, "Ошибка входа", Toast.LENGTH_SHORT).show()
             shared_prefs.edit().putBoolean("signed", false).apply()
-        }
+        }*/
+    }
+
+    override fun onSuccess(document : QueryDocumentSnapshot) {
+            val intent = Intent(this, MainScreenActivity::class.java)
+            shared_prefs.edit().putBoolean("signed", true).apply()
+            shared_prefs.edit().putString("login", document["login"].toString()).apply()
+            shared_prefs.edit().putString("date_of_birth", document["birth_date"].toString()).apply()
+            shared_prefs.edit().putString("university", document["university"].toString()).apply()
+            shared_prefs.edit().putString("password", document["password"].toString()).apply()
+            startActivity(intent)
+    }
+
+    override fun onFailure() {
+        Toast.makeText(this, "Ошибка входа", Toast.LENGTH_SHORT).show()
+        shared_prefs.edit().putBoolean("signed", false).apply()
     }
 }

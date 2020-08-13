@@ -34,6 +34,7 @@ class RegActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
         btn_reg.setOnClickListener { this.addUser() }
         btn_login.setOnClickListener { finish() }
     }
@@ -46,6 +47,10 @@ class RegActivity : AppCompatActivity() {
         user = User(login, date_of_birth, university, password)
         if(user.add_to_db()){
             shared_prefs.edit().putBoolean("signed", true).apply()
+            shared_prefs.edit().putString("login", login).apply()
+            shared_prefs.edit().putString("date_of_birth", date_of_birth).apply()
+            shared_prefs.edit().putString("university", university).apply()
+            shared_prefs.edit().putString("password", password).apply()
             val intent = Intent(this, MainScreenActivity::class.java)
             startActivity(intent)
         }
