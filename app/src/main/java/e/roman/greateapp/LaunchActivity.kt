@@ -13,7 +13,7 @@ class LaunchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launch)
         //инциализация всех ресурсов
-        shared_prefs = getPreferences(Context.MODE_PRIVATE)
+        shared_prefs = getSharedPreferences("file", Context.MODE_PRIVATE)
     }
 
     override fun onStart() {
@@ -29,7 +29,7 @@ class LaunchActivity : AppCompatActivity() {
             intent = Intent(this, MainScreenActivity::class.java)
         }
         else{
-            intent = Intent(this, LogRegActivity::class.java)
+            intent = Intent(this, LoginActivity::class.java)
         }
         //intent = Intent(this, LogRegActivity::class.java)
         startActivity(intent)
