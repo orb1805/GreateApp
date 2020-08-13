@@ -8,21 +8,17 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.webkit.RenderProcessGoneDetail
-import android.webkit.WebResourceRequest
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Button
-import android.widget.DatePicker
 import android.widget.RadioButton
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.android.synthetic.main.activity_log_reg.*
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.concurrent.thread
 
 class LogRegActivity : AppCompatActivity() {
 
+    private val dataBase = FirebaseFirestore.getInstance()
     private lateinit var registrationButton : Button
     private lateinit var user : User
     private lateinit var firstName : TextInputEditText
@@ -40,6 +36,7 @@ class LogRegActivity : AppCompatActivity() {
     private lateinit var webView : WebView
     private lateinit var page: StudentPage
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     @SuppressLint("JavascriptInterface")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,10 +66,10 @@ class LogRegActivity : AppCompatActivity() {
         super.onResume()
         registrationButton.setOnClickListener { this.addUser() }
         isMan.setOnClickListener {
-            isWoman.isChecked = false;
+            isWoman.isChecked = false
         }
         isWoman.setOnClickListener {
-            isMan.isChecked = false;
+            isMan.isChecked = false
         }
     }
 
@@ -81,13 +78,37 @@ class LogRegActivity : AppCompatActivity() {
         val firstName = firstName.text.toString()
         val secondName = secondName.text.toString()
         val thirdName = thirdName.text.toString()
-        val university = university.text.toString()
+        var university = university.text.toString()
+        //val birthDate = birthDate.text.toString()
         val captcha = captcha.text.toString()
         val gender = if(isMan.isChecked) 1 else if(isWoman.isChecked) 0 else -1
-        Log.d("MyLogGender", gender.toString())
-        //val birthDate = birthDate.text.toString()
-        val password = password.text.toString()
         val login = login.text.toString()
+        val password = password.text.toString()
+        val repeatPassword = repeatPassword.text.toString()
+
+        if(password != repeatPassword) {
+            //TODO не совпадают пароли
+        }
+
+        var matchCount = 0
+        val univerityRegex = university.toRegex()
+        dataBase.collection("universities").get()
+            .addOnSuccessListener { data ->
+                for(field in data) {
+                    if(univerityRegex.find(field["name"].toString(), 0) != null) {
+                        ++matchCount
+                        university = field["id"].toString()
+                    }
+                }
+            }
+        if(matchCount >= 2) {
+            //TODO Больше одного совпадения у универа. Попросить уточнить
+            Log.d("MyLogCheckUniversity", "better than one")
+        }
+        else if(matchCount == 0) {
+            //TODO универ не найден. Обновление страницы
+            Log.d("MyLogCheckUniversity", "not found")
+        }
 
         page.checkForm(firstName, secondName, thirdName, university, "", gender, captcha)
 
@@ -98,8 +119,9 @@ class LogRegActivity : AppCompatActivity() {
                 page.loadPage()
             }
             else if(page.isAcceptable == 1) { // найден в реестре
-                user = User(login, "", university, password)
-                if(user.add_to_db()){
+                user = User(login, password, firstName, secondName, thirdName,
+                            university, birthDate = "")
+                if(user.addToDataBase()){
                     shared_prefs.edit().putBoolean("signed", true)
                     val intent = Intent(this, MainScreenActivity::class.java)
                     startActivity(intent)

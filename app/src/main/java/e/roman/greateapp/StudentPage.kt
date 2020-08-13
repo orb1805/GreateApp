@@ -1,14 +1,17 @@
 package e.roman.greateapp
 
 import android.os.Build
+import android.provider.ContactsContract
 import android.util.Log
 import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
+import com.google.firebase.firestore.FirebaseFirestore
 
 class StudentPage(private val url: String, private val webView: WebView) {
     var isAcceptable = -1 // 0 - не найден, 1 - найден, 2 - неверная каптча, 3 - технические шоколадки
+    val dataBase = FirebaseFirestore.getInstance()
     init {
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
@@ -33,9 +36,9 @@ class StudentPage(private val url: String, private val webView: WebView) {
                         "var captcha = document.getElementsByClassName('captcha-image-container')[0];" +
                         "var captcha_div = document.createElement('div');" +
                         "captcha_div.innerHTML = captcha.outerHTML;" +
-                        "invisible_div.style.display = 'none';" +
                         "return 'ok'; })();") {
                     Log.d("MyLogLoad", it)
+                    updateUniversitiesDataBase()
                 }
             }
         }
@@ -110,5 +113,36 @@ class StudentPage(private val url: String, private val webView: WebView) {
                 }
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    fun updateUniversitiesDataBase() : Boolean {
+        var iter = 0
+        val query = DataBaseQuerySuccess()
+        var inArray = false
+        val jQuery = "(function() {" +
+                "var universities = document.getElementsByClassName('item');" +
+                "var ret = '';" +
+                "for(let i = 0; i < universities.length; ++i)" +
+                "ret = ret + universities[i].innerText + ';' + universities[i].getAttribute('data-value') + ';';" +
+                "return ret; })()"
+        webView.evaluateJavascript(jQuery) {
+            val regex = Regex(";")
+            val universityList = it.split(regex)
+            var i = 0
+            while(2 * i + 1 < universityList.size) {
+                val universityDB : MutableMap<String, Any> = HashMap()
+                universityDB["name"] = universityList[2 * i]
+                universityDB["id"] = universityList[2 * i + 1]
+                Log.d("MyLogUpdateUniversities", universityDB["name"].toString() + "___" + universityDB["id"].toString())
+                dataBase.collection("universities").add(universityDB)
+                    .addOnSuccessListener {}
+                    .addOnFailureListener {
+                        query.isSuccess = false
+                    }
+                ++i
+            }
+        }
+        return query.isSuccess
     }
 }
