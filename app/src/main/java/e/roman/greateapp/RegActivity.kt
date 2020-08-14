@@ -54,7 +54,7 @@ class RegActivity : AppCompatActivity() {
         password = findViewById(R.id.textInputPassword)
         repeatPassword = findViewById(R.id.textInputRepeatPassword)
         captcha = findViewById(R.id.textInputCaptcha)
-        shared_prefs = getPreferences(Context.MODE_PRIVATE)
+        shared_prefs = getSharedPreferences("file", Context.MODE_PRIVATE)
         isMan = findViewById(R.id.radioButtonM)
         isWoman = findViewById(R.id.radioButtonW)
         webView = findViewById(R.id.webView)
@@ -125,13 +125,13 @@ class RegActivity : AppCompatActivity() {
                 user = User(login, password, firstName, secondName, thirdName,
                             university, birthDate = "")
                 if(user.addToDataBase()){
-                    shared_prefs.edit().putBoolean("signed", true)
+                    shared_prefs.edit().putBoolean("signed", true).apply()
                     val intent = Intent(this, MainScreenActivity::class.java)
                     startActivity(intent)
                 }
                 else{
                     //TODO: сообщение об ошибке
-                    shared_prefs.edit().putBoolean("signed", false)
+                    shared_prefs.edit().putBoolean("signed", false).apply()
                 }
             }
             else if(page.isAcceptable == 2) { // неверная каптча
