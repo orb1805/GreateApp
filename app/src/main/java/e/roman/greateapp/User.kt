@@ -1,5 +1,6 @@
 package e.roman.greateapp
 
+import android.content.Context
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
@@ -10,9 +11,8 @@ class User(private val login : String, private val password : String,
            private val birthDate : String) {
 
     private val dataBase: FirebaseFirestore = FirebaseFirestore.getInstance()
-    //private var surname : String
     //TODO: добавить почту
-    fun addToDataBase() : Boolean {
+    fun addToDataBase(context : FireBaseListener){
         /*var myRef = db.getReference("user")
         myRef.setValue(this.name)*/
         val user: MutableMap<String, Any> = HashMap()
@@ -25,8 +25,7 @@ class User(private val login : String, private val password : String,
         user["birth_date"] = this.birthDate
         val query = DataBaseQuerySuccess()
         dataBase.collection("users").add(user)
-            .addOnSuccessListener{ query.isSuccess = true }
-            .addOnFailureListener{ query.isSuccess = false }
-        return query.isSuccess
+            .addOnSuccessListener{ context.onSuccess(null) }
+            .addOnFailureListener{ context.onFailure() }
     }
 }

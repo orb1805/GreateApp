@@ -11,12 +11,14 @@ import android.util.Log
 import android.webkit.WebView
 import android.widget.Button
 import android.widget.RadioButton
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlin.concurrent.thread
 
-class RegActivity : AppCompatActivity() {
+class RegActivity : AppCompatActivity(), FireBaseListener {
 
     private val dataBase = FirebaseFirestore.getInstance()
     private lateinit var registrationButton : Button
@@ -91,6 +93,7 @@ class RegActivity : AppCompatActivity() {
 
         if(password != repeatPassword) {
             //TODO не совпадают пароли
+            Toast.makeText(this, "Пароли не совпадают", Toast.LENGTH_SHORT).show()
         }
 
         var matchCount = 0
@@ -124,7 +127,8 @@ class RegActivity : AppCompatActivity() {
             else if(page.isAcceptable == 1) { // найден в реестре
                 user = User(login, password, firstName, secondName, thirdName,
                             university, birthDate = "")
-                if(user.addToDataBase()){
+                user.addToDataBase(this)
+                /*if(user.addToDataBase()){
                     shared_prefs.edit().putBoolean("signed", true).apply()
                     val intent = Intent(this, MainScreenActivity::class.java)
                     startActivity(intent)
@@ -132,7 +136,7 @@ class RegActivity : AppCompatActivity() {
                 else{
                     //TODO: сообщение об ошибке
                     shared_prefs.edit().putBoolean("signed", false).apply()
-                }
+                }*/
             }
             else if(page.isAcceptable == 2) { // неверная каптча
                 page.loadPage()
@@ -144,5 +148,16 @@ class RegActivity : AppCompatActivity() {
                 page.loadPage()
             }
         }
+    }
+
+    override fun onSuccess(document: QueryDocumentSnapshot?) {
+        shared_prefs.edit().putBoolean("signed", true).apply()
+        val intent = Intent(this, MainScreenActivity::class.java)
+        startActivity(intent)
+    }
+
+    override fun onFailure() {
+        //TODO: сообщение об ошибке
+        shared_prefs.edit().putBoolean("signed", false).apply()
     }
 }
