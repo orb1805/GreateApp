@@ -88,10 +88,14 @@ class LoginActivity : AppCompatActivity(), FireBaseListener{
         }*/
     }
 
-    override fun onSuccess(document : QueryDocumentSnapshot) {
+    override fun finish() {
+        //чтобы нельзя было выйти из активити через встроенную кнопку "назад"
+    }
+
+    override fun onSuccess(document : QueryDocumentSnapshot?) {
             val intent = Intent(this, MainScreenActivity::class.java)
             shared_prefs.edit().putBoolean("signed", true).apply()
-            shared_prefs.edit().putString("login", document["login"].toString()).apply()
+            shared_prefs.edit().putString("login", document!!["login"].toString()).apply()
             shared_prefs.edit().putString("date_of_birth", document["birth_date"].toString()).apply()
             shared_prefs.edit().putString("university", document["university"].toString()).apply()
             shared_prefs.edit().putString("password", document["password"].toString()).apply()
