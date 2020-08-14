@@ -127,6 +127,7 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
             else if(page.isAcceptable == 1) { // найден в реестре
                 user = User(login, password, firstName, secondName, thirdName,
                             university, birthDate = "")
+
                 user.addToDataBase(this)
                 /*if(user.addToDataBase()){
                     shared_prefs.edit().putBoolean("signed", true).apply()
