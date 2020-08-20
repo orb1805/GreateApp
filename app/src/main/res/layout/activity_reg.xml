@@ -76,13 +76,6 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/textInputBirthDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="date" />
-
         <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -106,6 +99,18 @@
                     android:layout_weight="1"
                     android:text="Женский" />
             </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textInputBirthDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Дата рождения"
+                    android:inputType="date" />
+            </com.google.android.material.textfield.TextInputLayout>
 
         </RadioGroup>
 
