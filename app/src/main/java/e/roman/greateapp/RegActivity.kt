@@ -14,12 +14,14 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.RadioButton
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlin.concurrent.thread
 
-class RegActivity : AppCompatActivity() {
+class RegActivity : AppCompatActivity(), FireBaseListener {
 
     private val dataBase = FirebaseFirestore.getInstance()
     private lateinit var registrationButton : Button
@@ -55,7 +57,7 @@ class RegActivity : AppCompatActivity() {
         password = findViewById(R.id.textInputPassword)
         repeatPassword = findViewById(R.id.textInputRepeatPassword)
         captcha = findViewById(R.id.textInputCaptcha)
-        shared_prefs = getPreferences(Context.MODE_PRIVATE)
+        shared_prefs = getSharedPreferences("file", Context.MODE_PRIVATE)
         isMan = findViewById(R.id.radioButtonM)
         isWoman = findViewById(R.id.radioButtonW)
         webView = findViewById(R.id.webView)
@@ -96,6 +98,7 @@ class RegActivity : AppCompatActivity() {
         }
         if(password != repeatPassword) {
             //TODO не совпадают пароли
+            Toast.makeText(this, "Пароли не совпадают", Toast.LENGTH_SHORT).show()
         }
         page.checkForm(firstName, secondName, thirdName, universityId, birthDate, gender, captcha)
         var registered = false
@@ -126,6 +129,37 @@ class RegActivity : AppCompatActivity() {
                     Log.d("MyLogCheck", "dont loaded yet")
                 }
             }
+        if(matchCount >= 2) {
+            //TODO Больше одного совпадения у универа. Попросить уточнить
+            Log.d("MyLogCheckUniversity", "better than one")
+        }
+        else if(matchCount == 0) {
+            //TODO универ не найден. Обновление страницы
+            Log.d("MyLogCheckUniversity", "not found")
+        }
+
+        page.checkForm(firstName, secondName, thirdName, university, "", gender, captcha)
+
+        thread {
+            Thread.sleep(1000)
+
+            if(page.isAcceptable == 0) { // не найден в реестре
+                page.loadPage()
+            }
+            else if(page.isAcceptable == 1) { // найден в реестре
+                user = User(login, password, firstName, secondName, thirdName,
+                            university, birthDate = "")
+                user.addToDataBase(this)
+                /*if(user.addToDataBase()){
+                    shared_prefs.edit().putBoolean("signed", true).apply()
+                    val intent = Intent(this, MainScreenActivity::class.java)
+                    startActivity(intent)
+                }
+                else{
+                    //TODO: сообщение об ошибке
+                    shared_prefs.edit().putBoolean("signed", false).apply()
+                }*/
+            }
 
             override fun onFinish() {
                 if(page.isAcceptable == -1 && !registered)
@@ -133,5 +167,16 @@ class RegActivity : AppCompatActivity() {
             }
         }
         timer.start()
+    }
+
+    override fun onSuccess(document: QueryDocumentSnapshot?) {
+        shared_prefs.edit().putBoolean("signed", true).apply()
+        val intent = Intent(this, MainScreenActivity::class.java)
+        startActivity(intent)
+    }
+
+    override fun onFailure() {
+        //TODO: сообщение об ошибке
+        shared_prefs.edit().putBoolean("signed", false).apply()
     }
 }
