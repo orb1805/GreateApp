@@ -1,17 +1,18 @@
 package e.roman.greateapp
 
 import android.os.Build
-import android.provider.ContactsContract
 import android.util.Log
 import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QueryDocumentSnapshot
 
-class StudentPage(private val url: String, private val webView: WebView) {
+class StudentPage(private val url: String, private val webView: WebView) : FireBaseListener {
     var isAcceptable = -1 // 0 - не найден, 1 - найден, 2 - неверная каптча, 3 - технические шоколадки
-    val dataBase = FirebaseFirestore.getInstance()
+    private val dataBase = FirebaseFirestore.getInstance()
+    private val query = DataBaseQuerySuccess()
     init {
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
@@ -20,28 +21,32 @@ class StudentPage(private val url: String, private val webView: WebView) {
     fun loadPage() {
         webView.loadUrl(url)
 
-        webView.webViewClient = object: WebViewClient() {
+        webView.webViewClient = object : WebViewClient() {
             @RequiresApi(Build.VERSION_CODES.KITKAT)
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                Log.d("MyLogFinish", "finished")
-
-                webView.evaluateJavascript("(function() {" +
-                        "var captcha_div = document.createElement('div');" +
-                        "var body = document.getElementsByTagName('body')[0];" +
-                        "var html_el = document.getElementsByTagName('html')[0];" +
-                        "captcha_div.innerHTML = document.getElementById('captcha-image').outerHTML;" +
-                        "html_el.insertBefore(captcha_div, body);" +
-                        "body.style.visibility = 'hidden';" +
-                        "var captcha = document.getElementsByClassName('captcha-image-container')[0];" +
-                        "var captcha_div = document.createElement('div');" +
-                        "captcha_div.innerHTML = captcha.outerHTML;" +
-                        "return 'ok'; })();") {
-                    Log.d("MyLogLoad", it)
-                    updateUniversitiesDataBase()
-                }
+                updateUniversitiesDataBase()
+                showCaptcha()
             }
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    fun showCaptcha() {
+        val jScript = "(function() {" +
+                "var captcha_div = document.createElement('div');" +
+                "var body = document.getElementsByTagName('body')[0];" +
+                "var html_el = document.getElementsByTagName('html')[0];" +
+                "captcha_div.innerHTML = document.getElementById('captcha-image').outerHTML;" +
+                "html_el.insertBefore(captcha_div, body);" +
+                "body.style.visibility = 'hidden';" +
+                "var captcha = document.getElementsByClassName('captcha-image-container')[0];" +
+                "var captcha_div = document.createElement('div');" +
+                "captcha_div.innerHTML = captcha.outerHTML; })()"
+        webView.evaluateJavascript(jScript, {
+            Log.d("MyLogCaptcha", "loaded")
+        })
+
     }
 
     fun checkForm(firstName: String, secondName: String, thirdName: String, university: String,
@@ -74,14 +79,6 @@ class StudentPage(private val url: String, private val webView: WebView) {
         webView.loadUrl(jQuery)
 
         webView.webViewClient = object: WebViewClient() {
-            override fun onRenderProcessGone(
-                view: WebView?,
-                detail: RenderProcessGoneDetail?
-            ): Boolean {
-                Log.d("MyLogFill", "finished")
-                return super.onRenderProcessGone(view, detail)
-            }
-
             @RequiresApi(Build.VERSION_CODES.KITKAT)
             override fun onLoadResource(view: WebView?, url: String?) {
                 super.onLoadResource(view, url)
@@ -117,32 +114,25 @@ class StudentPage(private val url: String, private val webView: WebView) {
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
     fun updateUniversitiesDataBase() : Boolean {
-        var iter = 0
-        val query = DataBaseQuerySuccess()
-        var inArray = false
         val jQuery = "(function() {" +
                 "var universities = document.getElementsByClassName('item');" +
                 "var ret = '';" +
                 "for(let i = 0; i < universities.length; ++i)" +
-                "ret = ret + universities[i].innerText + ';' + universities[i].getAttribute('data-value') + ';';" +
+                "ret = ret + universities[i].getAttribute('data-value') + ';' +" +
+                "universities[i].innerText + ';';" +
                 "return ret; })()"
-        webView.evaluateJavascript(jQuery) {
-            val regex = Regex(";")
-            val universityList = it.split(regex)
-            var i = 0
-            while(2 * i + 1 < universityList.size) {
-                val universityDB : MutableMap<String, Any> = HashMap()
-                universityDB["name"] = universityList[2 * i]
-                universityDB["id"] = universityList[2 * i + 1]
-                Log.d("MyLogUpdateUniversities", universityDB["name"].toString() + "___" + universityDB["id"].toString())
-                dataBase.collection("universities").add(universityDB)
-                    .addOnSuccessListener {}
-                    .addOnFailureListener {
-                        query.isSuccess = false
-                    }
-                ++i
-            }
-        }
+        webView.evaluateJavascript(jQuery, {
+            Log.d("MyLogUpdateUniversities", it)
+            DataBase.addUniversities(it.slice(1..it.length-1))
+        })
         return query.isSuccess
+    }
+
+    override fun onSuccess(document: QueryDocumentSnapshot) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onFailure() {
+        query.isSuccess = false
     }
 }

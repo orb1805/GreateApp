@@ -7,28 +7,28 @@ import android.content.SharedPreferences
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
+import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.RadioButton
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlin.concurrent.thread
 
-class RegActivity : AppCompatActivity(), FireBaseListener {
+class RegActivity : AppCompatActivity() {
 
     private val dataBase = FirebaseFirestore.getInstance()
     private lateinit var registrationButton : Button
     private lateinit var loginButton : Button
-    private lateinit var user : User
     private lateinit var firstName : TextInputEditText
     private lateinit var secondName : TextInputEditText
     private lateinit var thirdName : TextInputEditText
     private lateinit var university : TextInputEditText
-    //private lateinit var birthDate : TextInputEditText
+    private lateinit var birthDate : TextInputEditText
     private lateinit var login : TextInputEditText
     private lateinit var captcha : TextInputEditText
     private lateinit var password : TextInputEditText
@@ -39,7 +39,6 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
     private lateinit var webView : WebView
     private lateinit var page: StudentPage
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     @SuppressLint("JavascriptInterface")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,21 +50,19 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
         secondName = findViewById(R.id.textInputSecondName)
         thirdName = findViewById(R.id.textInputThirdName)
         university = findViewById(R.id.textInputUniversity)
-        //birthDate = findViewById(R.id.textInputBirthDate)
+        birthDate = findViewById(R.id.textInputBirthDate)
         login = findViewById(R.id.textInputLogin)
         password = findViewById(R.id.textInputPassword)
         repeatPassword = findViewById(R.id.textInputRepeatPassword)
         captcha = findViewById(R.id.textInputCaptcha)
-        shared_prefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        shared_prefs = getPreferences(Context.MODE_PRIVATE)
         isMan = findViewById(R.id.radioButtonM)
         isWoman = findViewById(R.id.radioButtonW)
         webView = findViewById(R.id.webView)
         page = StudentPage("https://www.mos.ru/karta-moskvicha/services-proverka-grazhdanina-v-reestre-studentov/", webView)
-
         page.loadPage()
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onResume() {
         super.onResume()
         registrationButton.setOnClickListener { this.addUser() }
@@ -78,86 +75,63 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun addUser(){
         val firstName = firstName.text.toString()
         val secondName = secondName.text.toString()
         val thirdName = thirdName.text.toString()
-        var university = university.text.toString()
-        //val birthDate = birthDate.text.toString()
+        val university = university.text.toString()
+        val birthDate = birthDate.text.toString()
         val captcha = captcha.text.toString()
         val gender = if(isMan.isChecked) 1 else if(isWoman.isChecked) 0 else -1
         val login = login.text.toString()
         val password = password.text.toString()
         val repeatPassword = repeatPassword.text.toString()
 
+        val universityId = DataBase.checkUniversity(university)
+        if(universityId == "more") {
+            Log.d("MyLogCheckUniversity", "More than one found")
+        }
+        else if(universityId == "no") {
+            Log.d("MyLogCheckUniversity", "Not found")
+        }
         if(password != repeatPassword) {
             //TODO не совпадают пароли
-            Toast.makeText(this, "Пароли не совпадают", Toast.LENGTH_SHORT).show()
         }
-
-        var matchCount = 0
-        val univerityRegex = university.toRegex()
-        dataBase.collection("universities").get()
-            .addOnSuccessListener { data ->
-                for(field in data) {
-                    if(univerityRegex.find(field["name"].toString(), 0) != null) {
-                        ++matchCount
-                        university = field["id"].toString()
+        page.checkForm(firstName, secondName, thirdName, universityId, birthDate, gender, captcha)
+        var registered = false
+        var timer = object : CountDownTimer(5000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                if(page.isAcceptable == 0) { // не найден в реестре
+                    Log.d("MyLogCheckData", "Not found")
+                }
+                else if(page.isAcceptable == 1) { // найден в реестре
+                    Log.d("MyLogCheckData", "Found")
+                    if(DataBase.addUser(User(login, password, firstName, secondName, thirdName,
+                        universityId, birthDate))) {
+                        shared_prefs.edit().putBoolean("signed", true)
+                        registered=true
+                    }
+                    else {
+                        //TODO: сообщение об ошибке
+                        shared_prefs.edit().putBoolean("signed", false)
                     }
                 }
-            }
-        if(matchCount >= 2) {
-            //TODO Больше одного совпадения у универа. Попросить уточнить
-            Log.d("MyLogCheckUniversity", "better than one")
-        }
-        else if(matchCount == 0) {
-            //TODO универ не найден. Обновление страницы
-            Log.d("MyLogCheckUniversity", "not found")
-        }
-
-        page.checkForm(firstName, secondName, thirdName, university, "", gender, captcha)
-
-        thread {
-            Thread.sleep(1000)
-
-            if(page.isAcceptable == 0) { // не найден в реестре
-                page.loadPage()
-            }
-            else if(page.isAcceptable == 1) { // найден в реестре
-                user = User(login, password, firstName, secondName, thirdName,
-                            university, birthDate = "")
-                user.addToDataBase(this)
-                /*if(user.addToDataBase()){
-                    shared_prefs.edit().putBoolean("signed", true).apply()
-                    val intent = Intent(this, MainScreenActivity::class.java)
-                    startActivity(intent)
+                else if(page.isAcceptable == 2) { // неверная каптча
+                    Log.d("MyLogCheckData", "Wrong captcha")
                 }
-                else{
-                    //TODO: сообщение об ошибке
-                    shared_prefs.edit().putBoolean("signed", false).apply()
-                }*/
+                else if(page.isAcceptable == 3) { // технические шоколадки
+                    Log.d("MyLogCheckData", "Technical error")
+                }
+                else {
+                    Log.d("MyLogCheck", "dont loaded yet")
+                }
             }
-            else if(page.isAcceptable == 2) { // неверная каптча
-                page.loadPage()
-            }
-            else if(page.isAcceptable == 3) { // технические шоколадки
-                page.loadPage()
-            }
-            else {
-                page.loadPage()
+
+            override fun onFinish() {
+                if(page.isAcceptable == -1 && !registered)
+                    Log.d("MyLogCheck", "Time limit exceed")
             }
         }
-    }
-
-    override fun onSuccess(document: QueryDocumentSnapshot?) {
-        shared_prefs.edit().putBoolean("signed", true).apply()
-        val intent = Intent(this, MainScreenActivity::class.java)
-        startActivity(intent)
-    }
-
-    override fun onFailure() {
-        //TODO: сообщение об ошибке
-        shared_prefs.edit().putBoolean("signed", false).apply()
+        timer.start()
     }
 }
