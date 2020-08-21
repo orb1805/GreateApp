@@ -104,31 +104,33 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
         var registered = false
         var timer = object : CountDownTimer(5000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                if(page.isAcceptable == 0) { // не найден в реестре
+                if (page.isAcceptable == 0) { // не найден в реестре
                     Log.d("MyLogCheckData", "Not found")
-                }
-                else if(page.isAcceptable == 1) { // найден в реестре
+                } else if (page.isAcceptable == 1) { // найден в реестре
                     Log.d("MyLogCheckData", "Found")
-                    if(DataBase.addUser(User(login, password, firstName, secondName, thirdName,
-                        universityId, birthDate))) {
+                    if (DataBase.addUser(
+                            User(
+                                login, password, firstName, secondName, thirdName,
+                                universityId, birthDate
+                            )
+                        )
+                    ) {
                         shared_prefs.edit().putBoolean("signed", true)
-                        registered=true
-                    }
-                    else {
+                        registered = true
+                    } else {
                         //TODO: сообщение об ошибке
                         shared_prefs.edit().putBoolean("signed", false)
                     }
-                }
-                else if(page.isAcceptable == 2) { // неверная каптча
+                } else if (page.isAcceptable == 2) { // неверная каптча
                     Log.d("MyLogCheckData", "Wrong captcha")
-                }
-                else if(page.isAcceptable == 3) { // технические шоколадки
+                } else if (page.isAcceptable == 3) { // технические шоколадки
                     Log.d("MyLogCheckData", "Technical error")
-                }
-                else {
+                } else {
                     Log.d("MyLogCheck", "dont loaded yet")
                 }
             }
+        }
+
         if(matchCount >= 2) {
             //TODO Больше одного совпадения у универа. Попросить уточнить
             Log.d("MyLogCheckUniversity", "better than one")
