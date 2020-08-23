@@ -87,51 +87,45 @@ class RegActivity : AppCompatActivity() {
         val password = password.text.toString()
         val repeatPassword = repeatPassword.text.toString()
 
-        val universityId = DataBase.checkUniversity(university)
-        if(universityId == "more") {
-            Log.d("MyLogCheckUniversity", "More than one found")
-        }
-        else if(universityId == "no") {
-            Log.d("MyLogCheckUniversity", "Not found")
-        }
-        if(password != repeatPassword) {
-            //TODO не совпадают пароли
-        }
-        page.checkForm(firstName, secondName, thirdName, universityId, birthDate, gender, captcha)
-        var registered = false
-        var timer = object : CountDownTimer(5000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                if(page.isAcceptable == 0) { // не найден в реестре
-                    Log.d("MyLogCheckData", "Not found")
-                }
-                else if(page.isAcceptable == 1) { // найден в реестре
-                    Log.d("MyLogCheckData", "Found")
-                    if(DataBase.addUser(User(login, password, firstName, secondName, thirdName,
-                        universityId, birthDate))) {
-                        shared_prefs.edit().putBoolean("signed", true)
-                        registered=true
-                    }
-                    else {
-                        //TODO: сообщение об ошибке
-                        shared_prefs.edit().putBoolean("signed", false)
-                    }
-                }
-                else if(page.isAcceptable == 2) { // неверная каптча
-                    Log.d("MyLogCheckData", "Wrong captcha")
-                }
-                else if(page.isAcceptable == 3) { // технические шоколадки
-                    Log.d("MyLogCheckData", "Technical error")
-                }
-                else {
-                    Log.d("MyLogCheck", "dont loaded yet")
-                }
-            }
 
-            override fun onFinish() {
-                if(page.isAcceptable == -1 && !registered)
-                    Log.d("MyLogCheck", "Time limit exceed")
+        val universityCallback = object : DataBase.UniversityCallback{
+            override fun onCallback(universityId: String) {
+                if(universityId == "more") {
+                    Log.d("MyLogCheckUniversity", "More than one found")
+                }
+                else if(universityId == "no") {
+                    Log.d("MyLogCheckUniversity", "Not found")
+                }
+                if(password != repeatPassword) {
+                    Log.d("MyLogCheckPasswords", "Passwords are not equal")
+                }
+
+                val checkFormCallback = object: StudentPage.CheckFormCallback {
+                    override fun onCallback(result: String) {
+                        if(page.isAcceptable == 0) { // не найден в реестре
+                            Log.d("MyLogCheckData", "Student didn't find")
+                        }
+                        else if(page.isAcceptable == 1) { // найден в реестре
+                            Log.d("MyLogCheckData", "Student Found")
+                            DataBase.addUser(User(login, password, firstName, secondName, thirdName,
+                                    universityId, birthDate))
+                        }
+                        else if(page.isAcceptable == 2) { // неверная каптча
+                            Log.d("MyLogCheckData", "Wrong captcha")
+                        }
+                        else if(page.isAcceptable == 3) { // технические шоколадки
+                            Log.d("MyLogCheckData", "Technical error")
+                        }
+                        else {
+                            Log.d("MyLogCheck", "Don't loaded yet")
+                        }
+                    }
+                }
+                page.checkForm(firstName, secondName, thirdName, universityId,
+                    birthDate, gender, captcha, checkFormCallback)
             }
         }
-        timer.start()
+
+        DataBase.checkUniversity(university, universityCallback)
     }
 }

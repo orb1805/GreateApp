@@ -10,6 +10,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 
 class StudentPage(private val url: String, private val webView: WebView) : FireBaseListener {
+    interface CheckFormCallback {
+        fun onCallback(result: String)
+    }
+
     var isAcceptable = -1 // 0 - не найден, 1 - найден, 2 - неверная каптча, 3 - технические шоколадки
     private val dataBase = FirebaseFirestore.getInstance()
     private val query = DataBaseQuerySuccess()
@@ -49,17 +53,18 @@ class StudentPage(private val url: String, private val webView: WebView) : FireB
 
     }
 
-    fun checkForm(firstName: String, secondName: String, thirdName: String, university: String,
-                birthDate: String, gender: Int, captcha: String) {
+    fun checkForm(firstName: String, secondName: String, thirdName: String, universityId: String,
+                birthDate: String, gender: Int, captcha: String, callback: CheckFormCallback) {
 
         var loaded = false
         var jQuery = "javascript:" +
                 "var first_name = '$firstName';" +
                 "var second_name = '$secondName';" +
                 "var third_name = '$thirdName';" +
-                "var university = '$university';" +
+                "var university = '$universityId';" +
                 "var captcha = '$captcha';" +
                 "var gender = $gender;" +
+                "var birth_date = '$birthDate';" +
                 "var in_first_name = document.getElementById('fdo-container-filter-input-name');" +
                 "var in_second_name = document.getElementById('fdo-container-filter-input-surname');" +
                 "var in_third_name = document.getElementById('fdo-container-filter-input-middlename');" +
@@ -72,8 +77,8 @@ class StudentPage(private val url: String, private val webView: WebView) : FireB
                 "in_second_name.value = second_name;" +
                 "in_third_name.value = third_name;" +
                 "in_captcha.value = captcha;" +
-                "in_university.value = '006';" +
-                "in_birth_date.value = '02.07.2000';" +
+                "in_university.value = university;" +
+                "in_birth_date.value = birth_date;" +
                 "var btn = document.getElementsByClassName('submit-btn')[0];" +
                 "btn.click();"
         webView.loadUrl(jQuery)
@@ -107,6 +112,7 @@ class StudentPage(private val url: String, private val webView: WebView) : FireB
                         if(it == "\"tech_fail\"")
                             isAcceptable = 3
                     }
+                    callback.onCallback(it)
                 }
             }
         }
