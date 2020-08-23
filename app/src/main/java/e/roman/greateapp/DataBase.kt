@@ -1,5 +1,6 @@
 package e.roman.greateapp
 
+import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
@@ -34,7 +35,7 @@ class DataBase : FireBaseListener{
             return true
         }
 
-        fun checkUniversity(s: String) : String {
+        fun checkUniversity(s: String, context : FireBaseListener)/* : String */{
             val regex = s.toRegex()
             var id = "no"
             Log.d("MyLogCheckUniversity", "in")
@@ -43,22 +44,24 @@ class DataBase : FireBaseListener{
                     for(document in result) {
                         if(regex.find(document.getString("name") as CharSequence) != null)
                             if(id != "no") {
-                                id="more" // Больше одного совпадения
+                                //id="more" // Больше одного совпадения
+                                context.onFailure()
                                 break
                             }
                             else {
-                                id = document.id
+                                //id = document.id
                                 Log.d("MyLogCheckUniversity", document.getString("name"))
+                                context.onSuccess(document)
                             }
                     }
                 }
 
 
-            return id
+            //return id
         }
     }
 
-    override fun onSuccess(document: QueryDocumentSnapshot) {
+    override fun onSuccess(document: QueryDocumentSnapshot?) {
         TODO("Not yet implemented")
     }
 

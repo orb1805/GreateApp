@@ -14,14 +14,12 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.RadioButton
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlin.concurrent.thread
 
-class RegActivity : AppCompatActivity(), FireBaseListener {
+class RegActivity : AppCompatActivity() {
 
     private val dataBase = FirebaseFirestore.getInstance()
     private lateinit var registrationButton : Button
@@ -57,7 +55,7 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
         password = findViewById(R.id.textInputPassword)
         repeatPassword = findViewById(R.id.textInputRepeatPassword)
         captcha = findViewById(R.id.textInputCaptcha)
-        shared_prefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        shared_prefs = getPreferences(Context.MODE_PRIVATE)
         isMan = findViewById(R.id.radioButtonM)
         isWoman = findViewById(R.id.radioButtonW)
         webView = findViewById(R.id.webView)
@@ -89,96 +87,45 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
         val password = password.text.toString()
         val repeatPassword = repeatPassword.text.toString()
 
-        val universityId = DataBase.checkUniversity(university)
-        if(universityId == "more") {
-            Log.d("MyLogCheckUniversity", "More than one found")
-        }
-        else if(universityId == "no") {
-            Log.d("MyLogCheckUniversity", "Not found")
-        }
-        if(password != repeatPassword) {
-            //TODO не совпадают пароли
-            Toast.makeText(this, "Пароли не совпадают", Toast.LENGTH_SHORT).show()
-        }
-        page.checkForm(firstName, secondName, thirdName, universityId, birthDate, gender, captcha)
-        var registered = false
-        var timer = object : CountDownTimer(5000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                if (page.isAcceptable == 0) { // не найден в реестре
-                    Log.d("MyLogCheckData", "Not found")
-                } else if (page.isAcceptable == 1) { // найден в реестре
-                    Log.d("MyLogCheckData", "Found")
-                    if (DataBase.addUser(
-                            User(
-                                login, password, firstName, secondName, thirdName,
-                                universityId, birthDate
-                            )
-                        )
-                    ) {
-                        shared_prefs.edit().putBoolean("signed", true)
-                        registered = true
-                    } else {
-                        //TODO: сообщение об ошибке
-                        shared_prefs.edit().putBoolean("signed", false)
+
+        val universityCallback = object : DataBase.UniversityCallback{
+            override fun onCallback(universityId: String) {
+                if(universityId == "more") {
+                    Log.d("MyLogCheckUniversity", "More than one found")
+                }
+                else if(universityId == "no") {
+                    Log.d("MyLogCheckUniversity", "Not found")
+                }
+                if(password != repeatPassword) {
+                    Log.d("MyLogCheckPasswords", "Passwords are not equal")
+                }
+
+                val checkFormCallback = object: StudentPage.CheckFormCallback {
+                    override fun onCallback(result: String) {
+                        if(page.isAcceptable == 0) { // не найден в реестре
+                            Log.d("MyLogCheckData", "Student didn't find")
+                        }
+                        else if(page.isAcceptable == 1) { // найден в реестре
+                            Log.d("MyLogCheckData", "Student Found")
+                            DataBase.addUser(User(login, password, firstName, secondName, thirdName,
+                                universityId, birthDate))
+                        }
+                        else if(page.isAcceptable == 2) { // неверная каптча
+                            Log.d("MyLogCheckData", "Wrong captcha")
+                        }
+                        else if(page.isAcceptable == 3) { // технические шоколадки
+                            Log.d("MyLogCheckData", "Technical error")
+                        }
+                        else {
+                            Log.d("MyLogCheck", "Don't loaded yet")
+                        }
                     }
-                } else if (page.isAcceptable == 2) { // неверная каптча
-                    Log.d("MyLogCheckData", "Wrong captcha")
-                } else if (page.isAcceptable == 3) { // технические шоколадки
-                    Log.d("MyLogCheckData", "Technical error")
-                } else {
-                    Log.d("MyLogCheck", "dont loaded yet")
                 }
+                page.checkForm(firstName, secondName, thirdName, universityId,
+                    birthDate, gender, captcha, checkFormCallback)
             }
         }
 
-        if(matchCount >= 2) {
-            //TODO Больше одного совпадения у универа. Попросить уточнить
-            Log.d("MyLogCheckUniversity", "better than one")
-        }
-        else if(matchCount == 0) {
-            //TODO универ не найден. Обновление страницы
-            Log.d("MyLogCheckUniversity", "not found")
-        }
-
-        page.checkForm(firstName, secondName, thirdName, university, "", gender, captcha)
-
-        thread {
-            Thread.sleep(1000)
-
-            if(page.isAcceptable == 0) { // не найден в реестре
-                page.loadPage()
-            }
-            else if(page.isAcceptable == 1) { // найден в реестре
-                user = User(login, password, firstName, secondName, thirdName,
-                            university, birthDate = "")
-                user.addToDataBase(this)
-                /*if(user.addToDataBase()){
-                    shared_prefs.edit().putBoolean("signed", true).apply()
-                    val intent = Intent(this, MainScreenActivity::class.java)
-                    startActivity(intent)
-                }
-                else{
-                    //TODO: сообщение об ошибке
-                    shared_prefs.edit().putBoolean("signed", false).apply()
-                }*/
-            }
-
-            override fun onFinish() {
-                if(page.isAcceptable == -1 && !registered)
-                    Log.d("MyLogCheck", "Time limit exceed")
-            }
-        }
-        timer.start()
-    }
-
-    override fun onSuccess(document: QueryDocumentSnapshot?) {
-        shared_prefs.edit().putBoolean("signed", true).apply()
-        val intent = Intent(this, MainScreenActivity::class.java)
-        startActivity(intent)
-    }
-
-    override fun onFailure() {
-        //TODO: сообщение об ошибке
-        shared_prefs.edit().putBoolean("signed", false).apply()
+        DataBase.checkUniversity(university, universityCallback)
     }
 }

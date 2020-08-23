@@ -1,5 +1,6 @@
 package e.roman.greateapp
 
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import android.webkit.RenderProcessGoneDetail
@@ -121,14 +122,14 @@ class StudentPage(private val url: String, private val webView: WebView) : FireB
                 "ret = ret + universities[i].getAttribute('data-value') + ';' +" +
                 "universities[i].innerText + ';';" +
                 "return ret; })()"
-        webView.evaluateJavascript(jQuery, {
+        webView.evaluateJavascript(jQuery) {
             Log.d("MyLogUpdateUniversities", it)
-            DataBase.addUniversities(it.slice(1..it.length-1))
-        })
+            DataBase.addUniversities(it.slice(1..it.length - 1))
+        }
         return query.isSuccess
     }
 
-    override fun onSuccess(document: QueryDocumentSnapshot) {
+    override fun onSuccess(document: QueryDocumentSnapshot?) {
         TODO("Not yet implemented")
     }
 
