@@ -1,5 +1,6 @@
 package e.roman.greateapp
 
+import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
@@ -39,8 +40,9 @@ class DataBase : FireBaseListener{
             return true
         }
 
-        fun checkUniversity(s: String, callback: UniversityCallback) {
-            val regex = s.toRegex()
+      
+         fun checkUniversity(s: String, callback: UniversityCallback) {
+           val regex = s.toRegex()
             universityId = "no"
             Log.d("MyLogCheckUniversity", "in")
             val res = dataBase.collection("universities")
@@ -53,15 +55,15 @@ class DataBase : FireBaseListener{
                             } else {
                                 universityId = document.id
                                 Log.d("MyLogCheckUniversity", document.getString("name"))
+                                context.onSuccess(document)
                             }
                     }
                     callback.onCallback(universityId)
                 }
-
         }
     }
 
-    override fun onSuccess(document: QueryDocumentSnapshot) {
+    override fun onSuccess(document: QueryDocumentSnapshot?) {
         TODO("Not yet implemented")
     }
 
