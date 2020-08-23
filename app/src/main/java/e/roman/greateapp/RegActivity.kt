@@ -108,7 +108,7 @@ class RegActivity : AppCompatActivity() {
                         else if(page.isAcceptable == 1) { // найден в реестре
                             Log.d("MyLogCheckData", "Student Found")
                             DataBase.addUser(User(login, password, firstName, secondName, thirdName,
-                                universityId, birthDate))
+                                    universityId, birthDate))
                         }
                         else if(page.isAcceptable == 2) { // неверная каптча
                             Log.d("MyLogCheckData", "Wrong captcha")

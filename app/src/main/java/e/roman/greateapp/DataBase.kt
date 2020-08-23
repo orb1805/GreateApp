@@ -6,14 +6,19 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 
 class DataBase : FireBaseListener{
+    interface UniversityCallback {
+        fun onCallback(universityId: String)
+    }
+
     companion object {
         val dataBase = FirebaseFirestore.getInstance()
+        var universityId = ""
         fun addUniversities(s: String) {
             val regex = Regex(";")
             val universities = s.split(";")
-            var i=0
-            while(2 * i + 1 < universities.size) {
-                val data : MutableMap<String, Any> = HashMap()
+            var i = 0
+            while (2 * i + 1 < universities.size) {
+                val data: MutableMap<String, Any> = HashMap()
                 data["name"] = universities[2 * i + 1]
                 dataBase.collection("universities")
                     .document(universities[2 * i])
@@ -22,7 +27,7 @@ class DataBase : FireBaseListener{
             }
         }
 
-        fun addUser(user: User) : Boolean{
+        fun addUser(user: User): Boolean {
             val doc: MutableMap<String, Any> = java.util.HashMap()
             doc["login"] = user.login
             doc["password"] = user.password
@@ -35,29 +40,26 @@ class DataBase : FireBaseListener{
             return true
         }
 
-        fun checkUniversity(s: String, context : FireBaseListener)/* : String */{
-            val regex = s.toRegex()
-            var id = "no"
+      
+         fun checkUniversity(s: String, callback: UniversityCallback) {
+           val regex = s.toRegex()
+            universityId = "no"
             Log.d("MyLogCheckUniversity", "in")
             val res = dataBase.collection("universities")
                 .get().addOnSuccessListener { result ->
-                    for(document in result) {
-                        if(regex.find(document.getString("name") as CharSequence) != null)
-                            if(id != "no") {
-                                //id="more" // Больше одного совпадения
-                                context.onFailure()
+                    for (document in result) {
+                        if (regex.find(document.getString("name") as CharSequence) != null)
+                            if (universityId != "no") {
+                                universityId = "more" // Больше одного совпадения
                                 break
-                            }
-                            else {
-                                //id = document.id
+                            } else {
+                                universityId = document.id
                                 Log.d("MyLogCheckUniversity", document.getString("name"))
                                 context.onSuccess(document)
                             }
                     }
+                    callback.onCallback(universityId)
                 }
-
-
-            //return id
         }
     }
 
