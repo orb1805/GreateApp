@@ -1,9 +1,8 @@
 package e.roman.greateapp
 
-import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.DocumentSnapshot
 
 interface FireBaseListener {
-    fun onSuccess(document : QueryDocumentSnapshot?)
-    //fun onSuccess()
+    fun onSuccess(document : DocumentSnapshot?)
     fun onFailure()
 }

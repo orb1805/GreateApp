@@ -7,7 +7,7 @@ import android.widget.Button
 
 class MainScreenActivity : AppCompatActivity() {
 
-    public lateinit var btn_person : Button
+    private lateinit var btn_person : Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,5 +23,9 @@ class MainScreenActivity : AppCompatActivity() {
             val intent = Intent(this, PersonActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    override fun finish() {
+        //чтобы нельзя было выйти из активити через встроенную кнопку "назад"
     }
 }

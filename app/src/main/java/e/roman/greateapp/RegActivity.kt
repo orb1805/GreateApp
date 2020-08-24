@@ -35,15 +35,17 @@ class RegActivity : AppCompatActivity() {
     private lateinit var repeatPassword : TextInputEditText
     private lateinit var isMan : RadioButton
     private lateinit var isWoman : RadioButton
-    private lateinit var shared_prefs : SharedPreferences
+    private lateinit var sharedPrefs : SharedPreferences
     private lateinit var webView : WebView
     private lateinit var page: StudentPage
+    private lateinit var context: Context
 
     @SuppressLint("JavascriptInterface")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reg)
 
+        context = this
         registrationButton = findViewById(R.id.buttonRegistration)
         loginButton = findViewById(R.id.buttonLogin)
         firstName = findViewById(R.id.textInputFirstName)
@@ -55,7 +57,7 @@ class RegActivity : AppCompatActivity() {
         password = findViewById(R.id.textInputPassword)
         repeatPassword = findViewById(R.id.textInputRepeatPassword)
         captcha = findViewById(R.id.textInputCaptcha)
-        shared_prefs = getPreferences(Context.MODE_PRIVATE)
+        sharedPrefs = getPreferences(Context.MODE_PRIVATE)
         isMan = findViewById(R.id.radioButtonM)
         isWoman = findViewById(R.id.radioButtonW)
         webView = findViewById(R.id.webView)
@@ -109,6 +111,16 @@ class RegActivity : AppCompatActivity() {
                             Log.d("MyLogCheckData", "Student Found")
                             DataBase.addUser(User(login, password, firstName, secondName, thirdName,
                                     universityId, birthDate))
+                            //TODO: исполнение следующих строк, если пользователь успешно записан в нашу базу
+                            sharedPrefs.edit().putBoolean("signed", true).apply()
+                            sharedPrefs.edit().putString("login", login).apply()
+                            sharedPrefs.edit().putString("password", password).apply()
+                            sharedPrefs.edit().putString("firstName", firstName).apply()
+                            sharedPrefs.edit().putString("secondName", secondName).apply()
+                            sharedPrefs.edit().putString("thirdName", thirdName).apply()
+                            sharedPrefs.edit().putString("universityId", universityId).apply()
+                            sharedPrefs.edit().putString("birthDate", birthDate).apply()
+                            startActivity(Intent(context, MainScreenActivity::class.java))
                         }
                         else if(page.isAcceptable == 2) { // неверная каптча
                             Log.d("MyLogCheckData", "Wrong captcha")

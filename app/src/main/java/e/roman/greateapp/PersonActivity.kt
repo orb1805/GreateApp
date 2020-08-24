@@ -12,37 +12,46 @@ import kotlinx.android.synthetic.main.activity_person.*
 class PersonActivity : AppCompatActivity() {
 
     private lateinit var login : TextView
-    private lateinit var date_of_birth : TextView
+    private lateinit var dateOfBirth : TextView
     private lateinit var university : TextView
     private lateinit var password : TextView
+    private lateinit var firstName : TextView
+    private lateinit var secondName : TextView
+    private lateinit var thirdName : TextView
     private lateinit var logout : Button
-    private lateinit var shared_prefs : SharedPreferences
+    private lateinit var sharedPrefs : SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_person)
 
         login = findViewById(R.id.txt_login)
-        date_of_birth = findViewById(R.id.txt_date_of_birth)
+        dateOfBirth = findViewById(R.id.txt_date_of_birth)
         university = findViewById(R.id.txt_university)
         password = findViewById(R.id.txt_password)
+        firstName = findViewById(R.id.txt_first_name)
+        secondName = findViewById(R.id.txt_second_name)
+        thirdName = findViewById(R.id.txt_third_name)
         logout = findViewById(R.id.btn_logout)
-        shared_prefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
     }
 
     override fun onResume() {
         super.onResume()
 
         //TODO: проверка на наличине данных в файле
-        if(shared_prefs.getBoolean("signed", false)) {
-            login.text = "Login: " + shared_prefs.getString("login", "--")
-            date_of_birth.text = "Date of birth: " + shared_prefs.getString("date_of_birth", "--")
-            university.text = "University: " + shared_prefs.getString("university", "--")
-            password.text = "Password: " + shared_prefs.getString("password", "--")
+        if(sharedPrefs.getBoolean("signed", false)) {
+            login.text = "Login: " + sharedPrefs.getString("login", "--")
+            dateOfBirth.text = "Date of birth: " + sharedPrefs.getString("birthDate", "--")
+            university.text = "University: " + sharedPrefs.getString("university", "--")
+            password.text = "Password: " + sharedPrefs.getString("password", "--")
+            firstName.text = "First name: " + sharedPrefs.getString("first_name", "--")
+            secondName.text = "Second name: " + sharedPrefs.getString("second_name", "--")
+            thirdName.text = "Third name: " + sharedPrefs.getString("third_name", "--")
         }
 
         btn_logout.setOnClickListener {
-            shared_prefs.edit().putBoolean("signed", false).apply()
+            sharedPrefs.edit().putBoolean("signed", false).apply()
             startActivity(Intent(this, LoginActivity::class.java))
         }
     }

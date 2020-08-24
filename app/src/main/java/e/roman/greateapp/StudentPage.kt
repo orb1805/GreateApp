@@ -7,6 +7,7 @@ import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 
@@ -135,7 +136,7 @@ class StudentPage(private val url: String, private val webView: WebView) : FireB
         return query.isSuccess
     }
 
-    override fun onSuccess(document: QueryDocumentSnapshot?) {
+    override fun onSuccess(document: DocumentSnapshot?) {
         TODO("Not yet implemented")
     }
 
