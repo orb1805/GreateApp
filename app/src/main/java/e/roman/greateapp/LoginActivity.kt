@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_reg.*
+import java.security.MessageDigest
 import java.sql.BatchUpdateException
 
 class LoginActivity : AppCompatActivity(), FireBaseListener{
@@ -50,19 +51,20 @@ class LoginActivity : AppCompatActivity(), FireBaseListener{
 
     private fun checkLogin(){
         val login = this.login.text.toString()
-        val password = this.password.text.toString()
-        //val q = Suc()
-        //val intent : Intent
-        //db.collection("users").whereEqualTo("login", login).get().addOnSuccessListener { documents ->
-        db.collection("users").document(login).get().addOnSuccessListener { document ->
-                //if(document.data?.get("password").toString() == password) {
-            if(document.data!!["password"].toString() == password){
-                    this.onSuccess(document)
+        val password = this.password.text.toString().toMD5()
+        if (login.isNotEmpty() && password.isNotEmpty()) {
+            db.collection("users").document(login).get().addOnSuccessListener { document ->
+                if (document != null) {
+                    if (document.data?.get("password")?.toString()  == password) {
+                        this.onSuccess(document)
+                    } else {
+                        this.onFailure()
+                    }
                 }
-                else {
-                    this.onFailure()
-                }
-        }.addOnFailureListener{this.onFailure() }
+                /*else
+                    this.onFailure()*/
+            }.addOnFailureListener { this.onFailure() }
+        }
     }
 
     override fun finish() {
@@ -73,12 +75,12 @@ class LoginActivity : AppCompatActivity(), FireBaseListener{
         val intent = Intent(this, MainScreenActivity::class.java)
         sharedPrefs.edit().putBoolean("signed", true).apply()
         sharedPrefs.edit().putString("login", this.login.text.toString()).apply()
-        sharedPrefs.edit().putString("password", document!!["password"].toString()).apply()
-        sharedPrefs.edit().putString("first_name", document["first_name"].toString()).apply()
+        //sharedPrefs.edit().putString("password", document!!["password"].toString()).apply()
+        sharedPrefs.edit().putString("first_name", document!!["first_name"].toString()).apply()
         sharedPrefs.edit().putString("second_name", document["second_name"].toString()).apply()
         sharedPrefs.edit().putString("third_name", document["third_name"].toString()).apply()
-        sharedPrefs.edit().putString("university", document["universityId"].toString()).apply()
-        sharedPrefs.edit().putString("birthDate", document["birth_date"].toString()).apply()
+        sharedPrefs.edit().putString("university", document["university"].toString()).apply()
+        sharedPrefs.edit().putString("birth_date", document["birth_date"].toString()).apply()
         startActivity(intent)
     }
 
@@ -86,4 +88,5 @@ class LoginActivity : AppCompatActivity(), FireBaseListener{
         Toast.makeText(this, "Ошибка входа", Toast.LENGTH_SHORT).show()
         sharedPrefs.edit().putBoolean("signed", false).apply()
     }
+
 }

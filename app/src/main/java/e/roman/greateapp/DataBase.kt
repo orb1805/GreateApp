@@ -7,7 +7,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 
-class DataBase : FireBaseListener{
+class DataBase/* : FireBaseListener*/{
     interface UniversityCallback {
         fun onCallback(universityId: String)
     }
@@ -34,7 +34,7 @@ class DataBase : FireBaseListener{
         fun addUser(user: User): Boolean {
             val doc: MutableMap<String, Any> = java.util.HashMap()
             //doc["login"] = user.login
-            doc["password"] = user.password
+            doc["password"] = user.password.toMD5()
             doc["first_name"] = user.firstName
             doc["second_name"] = user.secondName
             doc["third_name"] = user.thirdName
@@ -58,14 +58,14 @@ class DataBase : FireBaseListener{
                                 break
                             } else {
                                 universityId = document.id
-                                Log.d("MyLogCheckUniversity", document.getString("name"))
+                                Log.d("MyLogCheckUniversity", document?.getString("name"))
                             }
                     }
                     callback.onCallback(universityId)
                 }
         }
     }
-
+/*
     override fun onSuccess(document: DocumentSnapshot?) {
         TODO("Not yet implemented")
     }
@@ -73,4 +73,5 @@ class DataBase : FireBaseListener{
     override fun onFailure() {
         TODO("Not yet implemented")
     }
+ */
 }

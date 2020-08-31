@@ -104,32 +104,34 @@ class RegActivity : AppCompatActivity() {
 
                 val checkFormCallback = object: StudentPage.CheckFormCallback {
                     override fun onCallback(result: String) {
-                        if(page.isAcceptable == 0) { // не найден в реестре
-                            Log.d("MyLogCheckData", "Student didn't find")
-                        }
-                        else if(page.isAcceptable == 1) { // найден в реестре
-                            Log.d("MyLogCheckData", "Student Found")
-                            DataBase.addUser(User(login, password, firstName, secondName, thirdName,
+                        when (page.isAcceptable) {
+                            0 -> { // не найден в реестре
+                                Log.d("MyLogCheckData", "Student didn't find")
+                            }
+                            1 -> { // найден в реестре
+                                Log.d("MyLogCheckData", "Student Found")
+                                DataBase.addUser(User(login, password, firstName, secondName, thirdName,
                                     universityId, birthDate))
-                            //TODO: исполнение следующих строк, если пользователь успешно записан в нашу базу
-                            sharedPrefs.edit().putBoolean("signed", true).apply()
-                            sharedPrefs.edit().putString("login", login).apply()
-                            sharedPrefs.edit().putString("password", password).apply()
-                            sharedPrefs.edit().putString("first_name", firstName).apply()
-                            sharedPrefs.edit().putString("second_name", secondName).apply()
-                            sharedPrefs.edit().putString("third_name", thirdName).apply()
-                            sharedPrefs.edit().putString("university", universityId).apply()
-                            sharedPrefs.edit().putString("birthDate", birthDate).apply()
-                            startActivity(Intent(context, MainScreenActivity::class.java))
-                        }
-                        else if(page.isAcceptable == 2) { // неверная каптча
-                            Log.d("MyLogCheckData", "Wrong captcha")
-                        }
-                        else if(page.isAcceptable == 3) { // технические шоколадки
-                            Log.d("MyLogCheckData", "Technical error")
-                        }
-                        else {
-                            Log.d("MyLogCheck", "Don't loaded yet")
+                                //TODO: исполнение следующих строк, если пользователь успешно записан в нашу базу
+                                sharedPrefs.edit().putBoolean("signed", true).apply()
+                                //sharedPrefs.edit().putString("login", login).apply()
+                                sharedPrefs.edit().putString("password", password).apply()
+                                sharedPrefs.edit().putString("first_name", firstName).apply()
+                                sharedPrefs.edit().putString("second_name", secondName).apply()
+                                sharedPrefs.edit().putString("third_name", thirdName).apply()
+                                sharedPrefs.edit().putString("university", universityId).apply()
+                                sharedPrefs.edit().putString("birth_date", birthDate).apply()
+                                startActivity(Intent(context, MainScreenActivity::class.java))
+                            }
+                            2 -> { // неверная каптча
+                                Log.d("MyLogCheckData", "Wrong captcha")
+                            }
+                            3 -> { // технические шоколадки
+                                Log.d("MyLogCheckData", "Technical error")
+                            }
+                            else -> {
+                                Log.d("MyLogCheck", "Don't loaded yet")
+                            }
                         }
                     }
                 }
