@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".RegUnivActivity">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInputUniversity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_marginTop="40dp"
+            android:hint="Название учебного заведения" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="180dp"
+        android:layout_height="40dp"
+        android:layout_margin="20dp"
+        android:layout_marginBottom="12dp"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInputCaptcha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:hint="Символы с картинки" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/buttonRegistration"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_margin="20dp"
+        android:text="Зарегестрироваться" />
+
+</LinearLayout>

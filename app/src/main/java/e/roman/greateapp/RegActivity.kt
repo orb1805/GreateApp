@@ -4,22 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.util.Log
-import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.RadioButton
-import androidx.annotation.RequiresApi
+import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlin.concurrent.thread
 
-class RegActivity : AppCompatActivity() {
+class RegActivity : AppCompatActivity(), FireBaseListener {
 
     private val dataBase = FirebaseFirestore.getInstance()
     private lateinit var registrationButton : Button
@@ -38,7 +34,16 @@ class RegActivity : AppCompatActivity() {
     private lateinit var sharedPrefs : SharedPreferences
     private lateinit var webView : WebView
     private lateinit var page: StudentPage
-    private lateinit var context: Context
+    private lateinit var context: FireBaseListener
+
+    private lateinit var firstNameStr: String
+    private lateinit var secondNameStr: String
+    private lateinit var thirdNameStr: String
+    private lateinit var universityStr: String
+    private lateinit var birthDateStr: String
+    private lateinit var loginStr: String
+    private lateinit var passwordStr: String
+    private lateinit var univId: String
 
     @SuppressLint("JavascriptInterface")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +83,7 @@ class RegActivity : AppCompatActivity() {
     }
 
     private fun addUser(){
-        val firstName = firstName.text.toString()
+        /*val firstName = firstName.text.toString()
         val secondName = secondName.text.toString()
         val thirdName = thirdName.text.toString()
         val university = university.text.toString()
@@ -87,6 +92,16 @@ class RegActivity : AppCompatActivity() {
         val gender = if(isMan.isChecked) 1 else if(isWoman.isChecked) 0 else -1
         val login = login.text.toString()
         val password = password.text.toString()
+        val repeatPassword = repeatPassword.text.toString()*/
+        firstNameStr = firstName.text.toString()
+        secondNameStr = secondName.text.toString()
+        thirdNameStr = thirdName.text.toString()
+        universityStr = university.text.toString()
+        birthDateStr = birthDate.text.toString()
+        val captcha = captcha.text.toString()
+        val gender = if(isMan.isChecked) 1 else if(isWoman.isChecked) 0 else -1
+        loginStr = login.text.toString()
+        passwordStr = password.text.toString()
         val repeatPassword = repeatPassword.text.toString()
 
 
@@ -98,7 +113,7 @@ class RegActivity : AppCompatActivity() {
                 else if(universityId == "no") {
                     Log.d("MyLogCheckUniversity", "Not found")
                 }
-                if(password != repeatPassword) {
+                if(passwordStr != repeatPassword) {
                     Log.d("MyLogCheckPasswords", "Passwords are not equal")
                 }
 
@@ -110,18 +125,24 @@ class RegActivity : AppCompatActivity() {
                             }
                             1 -> { // найден в реестре
                                 Log.d("MyLogCheckData", "Student Found")
-                                DataBase.addUser(User(login, password, firstName, secondName, thirdName,
-                                    universityId, birthDate))
-                                //TODO: исполнение следующих строк, если пользователь успешно записан в нашу базу
+                                //DataBase.addUser(User(login, password, firstName, secondName, thirdName,
+                                 //   universityId, birthDate))
+                                univId = universityId
+                                DataBase.addUser(loginStr, passwordStr, firstNameStr, secondNameStr, thirdNameStr,
+                                    universityId, birthDateStr, context)
+                                /*//TODO: исполнение следующих строк, если пользователь успешно записан в нашу базу
                                 sharedPrefs.edit().putBoolean("signed", true).apply()
-                                //sharedPrefs.edit().putString("login", login).apply()
-                                sharedPrefs.edit().putString("password", password).apply()
+                                sharedPrefs.edit().putString("login", login).apply()
+                                //sharedPrefs.edit().putString("password", password).apply()
                                 sharedPrefs.edit().putString("first_name", firstName).apply()
                                 sharedPrefs.edit().putString("second_name", secondName).apply()
                                 sharedPrefs.edit().putString("third_name", thirdName).apply()
-                                sharedPrefs.edit().putString("university", universityId).apply()
+                                dataBase.collection("universities").document(universityId).get().addOnSuccessListener { document ->
+                                    if(document != null)
+                                        sharedPrefs.edit().putString("university", document!!["name"].toString()).apply()
+                                }
                                 sharedPrefs.edit().putString("birth_date", birthDate).apply()
-                                startActivity(Intent(context, MainScreenActivity::class.java))
+                                startActivity(Intent(context, MainScreenActivity::class.java))*/
                             }
                             2 -> { // неверная каптча
                                 Log.d("MyLogCheckData", "Wrong captcha")
@@ -135,11 +156,30 @@ class RegActivity : AppCompatActivity() {
                         }
                     }
                 }
-                page.checkForm(firstName, secondName, thirdName, universityId,
-                    birthDate, gender, captcha, checkFormCallback)
+                page.checkForm(firstNameStr, secondNameStr, thirdNameStr, universityId, birthDateStr, gender, captcha, checkFormCallback)
             }
         }
 
-        DataBase.checkUniversity(university, universityCallback)
+        DataBase.checkUniversity(universityStr, universityCallback)
+    }
+
+    override fun onSuccess(document: DocumentSnapshot?) {
+        sharedPrefs.edit().putBoolean("signed", true).apply()
+        sharedPrefs.edit().putString("login", loginStr).apply()
+        //sharedPrefs.edit().putString("password", password).apply()
+        sharedPrefs.edit().putString("first_name", firstNameStr).apply()
+        sharedPrefs.edit().putString("second_name", secondNameStr).apply()
+        sharedPrefs.edit().putString("third_name", thirdNameStr).apply()
+        dataBase.collection("universities").document(univId).get().addOnSuccessListener { document ->
+            if(document != null)
+                sharedPrefs.edit().putString("university", document!!["name"].toString()).apply()
+        }
+        sharedPrefs.edit().putString("birth_date", birthDateStr).apply()
+        startActivity(Intent(RegActivity@this, MainScreenActivity::class.java))
+    }
+
+    override fun onFailure(msg : String?) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+        sharedPrefs.edit().putBoolean("signed", false).apply()
     }
 }

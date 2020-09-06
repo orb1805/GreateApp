@@ -1,15 +1,12 @@
 package e.roman.greateapp
 
-import android.content.Context
 import android.os.Build
 import android.util.Log
-import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QueryDocumentSnapshot
 
 class StudentPage(private val url: String, private val webView: WebView) : FireBaseListener {
     interface CheckFormCallback {
@@ -140,7 +137,7 @@ class StudentPage(private val url: String, private val webView: WebView) : FireB
         TODO("Not yet implemented")
     }
 
-    override fun onFailure() {
+    override fun onFailure(msg: String?) {
         query.isSuccess = false
     }
 }

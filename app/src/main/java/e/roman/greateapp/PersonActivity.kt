@@ -40,7 +40,7 @@ class PersonActivity : AppCompatActivity() {
         //TODO: проверка на наличине данных в файле
         if(sharedPrefs.getBoolean("signed", false)) {
             login.text = "Login: " + sharedPrefs.getString("login", "--")
-            dateOfBirth.text = "Date of birth: " + sharedPrefs.getString("birthDate", "--")
+            dateOfBirth.text = "Date of birth: " + sharedPrefs.getString("birth_date", "--")
             university.text = "University: " + sharedPrefs.getString("university", "--")
             firstName.text = "First name: " + sharedPrefs.getString("first_name", "--")
             secondName.text = "Second name: " + sharedPrefs.getString("second_name", "--")

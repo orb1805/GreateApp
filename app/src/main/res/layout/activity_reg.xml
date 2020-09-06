@@ -176,17 +176,25 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
             <Button
                 android:id="@+id/buttonRegistration"
                 android:layout_width="238dp"
                 android:layout_height="64dp"
+                android:layout_weight="1"
                 android:text="Зарегестрироваться" />
 
             <Button
                 android:id="@+id/buttonLogin"
                 android:layout_width="234dp"
                 android:layout_height="64dp"
+                android:layout_weight="1"
                 android:text="Вход" />
+        </LinearLayout>
 
         </LinearLayout>
 
