@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:layout_marginTop="40dp"
-            android:hint="Название учебного заведения" />
+            android:hint="@string/university" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="Символы с картинки" />
+            android:hint="@string/captcha" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -48,6 +48,6 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_margin="20dp"
-        android:text="Зарегестрироваться" />
+        android:text="@string/registr" />
 
 </LinearLayout>

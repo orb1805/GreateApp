@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="Логин" />
+            android:hint="@string/login" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -27,7 +27,7 @@
             android:id="@+id/textInputPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Введите пароль"
+            android:hint="@string/inputPass"
             android:layout_margin="20dp"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -41,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="Повторите пароль"
+            android:hint="@string/repeatPass"
             android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -51,6 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:text="Далее" />
+        android:text="@string/next"
+        android:visibility="invisible" />
 
 </LinearLayout>

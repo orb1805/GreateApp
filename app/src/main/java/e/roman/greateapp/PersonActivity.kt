@@ -37,14 +37,13 @@ class PersonActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        //TODO: проверка на наличине данных в файле
         if(sharedPrefs.getBoolean("signed", false)) {
-            login.text = "Login: " + sharedPrefs.getString("login", "--")
-            dateOfBirth.text = "Date of birth: " + sharedPrefs.getString("birth_date", "--")
-            university.text = "University: " + sharedPrefs.getString("university", "--")
-            firstName.text = "First name: " + sharedPrefs.getString("first_name", "--")
-            secondName.text = "Second name: " + sharedPrefs.getString("second_name", "--")
-            thirdName.text = "Third name: " + sharedPrefs.getString("third_name", "--")
+            login.text = getString(R.string.login) + ": " + sharedPrefs.getString("login", "--")
+            dateOfBirth.text = getString(R.string.birthDate) + ": " + sharedPrefs.getString("birth_date", "--")
+            university.text = getString(R.string.university) + ": " + sharedPrefs.getString("university", "--")
+            firstName.text = getString(R.string.firstName) + ": " + sharedPrefs.getString("first_name", "--")
+            secondName.text = getString(R.string.secondName) + ": " + sharedPrefs.getString("second_name", "--")
+            thirdName.text = getString(R.string.thirdName) + ": " + sharedPrefs.getString("third_name", "--")
         }
 
         btn_logout.setOnClickListener {

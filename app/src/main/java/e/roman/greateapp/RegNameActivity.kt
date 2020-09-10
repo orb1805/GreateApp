@@ -3,10 +3,10 @@ package e.roman.greateapp
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MotionEvent
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.Button
 import android.widget.RadioButton
@@ -43,12 +43,22 @@ class RegNameActivity : AppCompatActivity() {
         nextBtn = findViewById(R.id.next_btn)
         birthDate = findViewById(R.id.textInputBirthDate)
         sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         isMan.setOnClickListener {
             isWoman.isChecked = false
+            if (firstName.text.toString().isNotEmpty() && secondName.text.toString().isNotEmpty()
+                && thirdName.text.toString().isNotEmpty() && birthDate.text.toString().isNotEmpty() && (isMan.isChecked || isWoman.isChecked))
+                nextBtn.visibility = View.VISIBLE
         }
         isWoman.setOnClickListener {
             isMan.isChecked = false
+            if (firstName.text.toString().isNotEmpty() && secondName.text.toString().isNotEmpty()
+                && thirdName.text.toString().isNotEmpty() && birthDate.text.toString().isNotEmpty() && (isMan.isChecked || isWoman.isChecked))
+                nextBtn.visibility = View.VISIBLE
         }
         nextBtn.setOnClickListener {
             if (firstName.text.toString().isNotEmpty() && secondName.text.toString().isNotEmpty() && thirdName.text.toString().isNotEmpty() && birthDate.text.toString().isNotEmpty()) {
@@ -61,6 +71,28 @@ class RegNameActivity : AppCompatActivity() {
             }
             else
                 Toast.makeText(this, "Input all fields", Toast.LENGTH_SHORT).show()
+        }
+
+        firstName.addTextChangedListener(textWatcher)
+        secondName.addTextChangedListener(textWatcher)
+        thirdName.addTextChangedListener(textWatcher)
+        birthDate.addTextChangedListener(textWatcher)
+    }
+
+
+    private val textWatcher =  object : TextWatcher{
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun afterTextChanged(p0: Editable?) {
+            if (firstName.text.toString().isNotEmpty() && secondName.text.toString().isNotEmpty()
+                && thirdName.text.toString().isNotEmpty() && birthDate.text.toString().isNotEmpty() && (isMan.isChecked || isWoman.isChecked))
+                nextBtn.visibility = View.VISIBLE
+            else
+                nextBtn.visibility = View.INVISIBLE
         }
     }
 }

@@ -5,7 +5,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import android.webkit.WebView
 import android.widget.Button
 import android.widget.Toast
@@ -50,7 +53,10 @@ class RegUnivActivity : AppCompatActivity(), FireBaseListener {
 
     override fun onResume() {
         super.onResume()
+
         registrationButton.setOnClickListener { this.addUser() }
+        university.addTextChangedListener(textWatcher)
+        captcha.addTextChangedListener(textWatcher)
     }
 
     private fun addUser(){
@@ -102,6 +108,21 @@ class RegUnivActivity : AppCompatActivity(), FireBaseListener {
         }
 
         DataBase.checkUniversity(universityStr, universityCallback)
+    }
+
+    private val textWatcher =  object : TextWatcher {
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun afterTextChanged(p0: Editable?) {
+            if (university.text.toString().isNotEmpty() && captcha.text.toString().isNotEmpty())
+                registrationButton.visibility = View.VISIBLE
+            else
+                registrationButton.visibility = View.INVISIBLE
+        }
     }
 
     override fun onSuccess(document: DocumentSnapshot?) {

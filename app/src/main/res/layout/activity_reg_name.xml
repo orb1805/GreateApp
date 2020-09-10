@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="Фамилия" />
+            android:hint="@string/secondName" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="Имя" />
+            android:hint="@string/firstName" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="Отчество" />
+            android:hint="@string/thirdName" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -64,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="Дата рождения"
+            android:hint="@string/birthDate"
             android:inputType="date" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -84,14 +84,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Мужской" />
+                android:text="@string/man" />
 
             <RadioButton
                 android:id="@+id/radioButtonW"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Женский" />
+                android:text="@string/woman" />
 
         </LinearLayout>
 
@@ -102,6 +102,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:text="Далее" />
+        android:visibility="invisible"
+        android:text="@string/next" />
 
 </LinearLayout>
