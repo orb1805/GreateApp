@@ -23,4 +23,6 @@
     <string name="captcha">Символы с картинки</string>
     <string name="registr">Зарегестрироваться</string>
     <string name="signedAs">Вы вошли как:</string>
+    <string name="title_activity_main_screen_scroll">ScrollingActivity</string>
+    <string name="action_settings">Settings</string>
 </resources>

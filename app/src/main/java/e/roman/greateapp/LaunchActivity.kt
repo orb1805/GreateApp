@@ -5,6 +5,9 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
+import android.widget.LinearLayout
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.math.sign
 
 class LaunchActivity : AppCompatActivity() {
@@ -24,14 +27,27 @@ class LaunchActivity : AppCompatActivity() {
         super.onResume()
         val intent : Intent
         val signed = shared_prefs.getBoolean("signed", false)
-        if(signed){
-            //TODO: проверка на совпадение ранее введенного пароля с тем, что был введен до этого
-            intent = Intent(this, MainScreenActivity::class.java)
+        intent = if(signed){
+            //TODO: проверка на совпадение ранее введенного пароля с тем, что есть в базе
+            Intent(this, MainScreenActivity::class.java)
+        } else{
+            Intent(this, LoginActivity::class.java)
         }
-        else{
-            intent = Intent(this, LoginActivity::class.java)
+
+        var names = ""
+        val base = FirebaseFirestore.getInstance()
+        var i = 0
+        base.collection("events").get().addOnSuccessListener {
+            for (doc in it) {
+                    names += "/" + doc["name"]!!.toString()
+                i++
+            }
+            val bundle = Bundle()
+            bundle.putString("names", names)
+            intent.putExtras(bundle)
+
+            //intent = Intent(this, LogRegActivity::class.java)
+            startActivity(intent)
         }
-        //intent = Intent(this, LogRegActivity::class.java)
-        startActivity(intent)
     }
 }
