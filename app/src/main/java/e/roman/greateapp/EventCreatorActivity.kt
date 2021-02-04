@@ -19,8 +19,6 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
     private lateinit var btnAdd: Button
     private lateinit var extraButton: Button
     private lateinit var etName: EditText
-    /*private lateinit var etDescription: EditText
-    private lateinit var calendar: CalendarView*/
     private lateinit var base: FirebaseFirestore
     private lateinit var sharedPrefs: SharedPreferences
     private var isChanged = false
@@ -30,6 +28,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
     private lateinit var sp: SharedPreferences
 
     private lateinit var etdescription: EditText
+    //private lateinit var cvDate: CalendarView
     private lateinit var etdate: EditText
     private lateinit var ettime: EditText
     private lateinit var etpeople: EditText
@@ -51,8 +50,8 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
         extraButton.width = LinearLayout.LayoutParams.MATCH_PARENT
         extraButton.height = LinearLayout.LayoutParams.WRAP_CONTENT
         etName = findViewById(R.id.et_name)
-        extraButton.text = "ДОПОЛНИТЕЛЬНО"
-        btnAdd.text = "ДОБАВИТЬ"
+        extraButton.text = getString(R.string.extra)
+        btnAdd.text = getString(R.string.add)//"ДОБАВИТЬ"
         layout.addView(extraButton)
         layout.addView(btnAdd)
         /*etDescription = findViewById(R.id.et_description)
@@ -92,6 +91,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                 }
                 if (checked["date"]!!) {
                     doc["date"] = etdate.text.toString()
+                    //doc["date"] = cvDate.date
                 }
                 if (checked["time"]!!) {
                     doc["time"] = ettime.text.toString()
@@ -113,6 +113,8 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                             "Adding failed"
                         )
                     }
+                /*base.collection("registers").add(hashMapOf(
+                ))*/
                 sharedPrefs.edit().putString("new name", name).apply()
             }
             else this.onFailure("Заполните все поля")
@@ -135,7 +137,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                 checked["description"] = true
                 var la = TextInputLayout(this)
                 etdescription = EditText(this)
-                etdescription.hint = "ОПИСАНИЕ"
+                etdescription.hint = getString(R.string.description)//"ОПИСАНИЕ"
                 etdescription.width = LinearLayout.LayoutParams.MATCH_PARENT
                 etdescription.height = LinearLayout.LayoutParams.WRAP_CONTENT
                 la.addView(etdescription)
@@ -147,7 +149,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                 checked["date"] = true
                 var la = TextInputLayout(this)
                 etdate = EditText(this)
-                etdate.hint = "Дата"
+                etdate.hint = getString(R.string.date)//"ДАТА"
                 etdate.width = LinearLayout.LayoutParams.MATCH_PARENT
                 etdate.height = LinearLayout.LayoutParams.WRAP_CONTENT
                 la.addView(etdate)
@@ -159,7 +161,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                 checked["time"] = true
                 var la = TextInputLayout(this)
                 ettime = EditText(this)
-                ettime.hint = "ВРЕМЯ"
+                ettime.hint = getString(R.string.time)//"ВРЕМЯ"
                 ettime.width = LinearLayout.LayoutParams.MATCH_PARENT
                 ettime.height = LinearLayout.LayoutParams.WRAP_CONTENT
                 la.addView(ettime)
@@ -171,7 +173,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                 checked["people"] = true
                 var la = TextInputLayout(this)
                 etpeople = EditText(this)
-                etpeople.hint = "КОЛИЧЕСТВО ЛЮДЕЙ"
+                etpeople.hint = getString(R.string.number_of_people)//"КОЛИЧЕСТВО ЛЮДЕЙ"
                 etpeople.width = LinearLayout.LayoutParams.MATCH_PARENT
                 etpeople.height = LinearLayout.LayoutParams.WRAP_CONTENT
                 la.addView(etpeople)
@@ -183,7 +185,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                 checked["price"] = true
                 var la = TextInputLayout(this)
                 etprice = EditText(this)
-                etprice.hint = "ЦЕНА"
+                etprice.hint = getString(R.string.price)//"ЦЕНА"
                 etprice.width = LinearLayout.LayoutParams.MATCH_PARENT
                 etprice.height = LinearLayout.LayoutParams.WRAP_CONTENT
                 la.addView(etprice)
@@ -195,7 +197,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                 checked["phone"] = true
                 var la = TextInputLayout(this)
                 etphone = EditText(this)
-                etphone.hint = "ТЕЛЕФОН"
+                etphone.hint = getString(R.string.phone)//"ТЕЛЕФОН"
                 etphone.width = LinearLayout.LayoutParams.MATCH_PARENT
                 etphone.height = LinearLayout.LayoutParams.WRAP_CONTENT
                 la.addView(etphone)

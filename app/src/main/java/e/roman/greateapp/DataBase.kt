@@ -43,6 +43,7 @@ class DataBase/* : FireBaseListener*/{
                     doc["third_name"] = thirdName
                     doc["university"] = universityId
                     doc["birth_date"] = birthDate
+                    doc["friends"] = listOf<String>()
                     dataBase.collection("users").document(login).set(doc)
                     context.onSuccess(null)
                 }

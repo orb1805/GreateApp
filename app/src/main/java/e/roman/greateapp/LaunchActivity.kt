@@ -19,10 +19,6 @@ class LaunchActivity : AppCompatActivity() {
         shared_prefs = getSharedPreferences("file", Context.MODE_PRIVATE)
     }
 
-    override fun onStart() {
-        super.onStart()
-    }
-
     override fun onResume() {
         super.onResume()
         val intent : Intent
@@ -46,7 +42,6 @@ class LaunchActivity : AppCompatActivity() {
             bundle.putString("names", names)
             intent.putExtras(bundle)
 
-            //intent = Intent(this, LogRegActivity::class.java)
             startActivity(intent)
         }
     }

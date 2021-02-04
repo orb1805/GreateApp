@@ -11,26 +11,28 @@ import kotlinx.android.synthetic.main.activity_person.*
 
 class PersonActivity : AppCompatActivity() {
 
-    private lateinit var login : TextView
-    private lateinit var dateOfBirth : TextView
-    private lateinit var university : TextView
-    private lateinit var firstName : TextView
-    private lateinit var secondName : TextView
-    private lateinit var thirdName : TextView
-    private lateinit var logout : Button
+    private lateinit var loginTV : TextView
+    private lateinit var dateOfBirthTV : TextView
+    private lateinit var universityTV : TextView
+    private lateinit var firstNameTV : TextView
+    private lateinit var secondNameTV : TextView
+    private lateinit var thirdNameTV : TextView
+    private lateinit var logoutBtn : Button
+    private lateinit var friendsListBtn : Button
     private lateinit var sharedPrefs : SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_person)
 
-        login = findViewById(R.id.txt_login)
-        dateOfBirth = findViewById(R.id.txt_date_of_birth)
-        university = findViewById(R.id.txt_university)
-        firstName = findViewById(R.id.txt_first_name)
-        secondName = findViewById(R.id.txt_second_name)
-        thirdName = findViewById(R.id.txt_third_name)
-        logout = findViewById(R.id.btn_logout)
+        loginTV = findViewById(R.id.txt_login)
+        dateOfBirthTV = findViewById(R.id.txt_date_of_birth)
+        universityTV = findViewById(R.id.txt_university)
+        firstNameTV = findViewById(R.id.txt_first_name)
+        secondNameTV = findViewById(R.id.txt_second_name)
+        thirdNameTV = findViewById(R.id.txt_third_name)
+        logoutBtn = findViewById(R.id.btn_logout)
+        friendsListBtn = findViewById(R.id.btn_friends_list)
         sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
     }
 
@@ -38,17 +40,21 @@ class PersonActivity : AppCompatActivity() {
         super.onResume()
 
         if(sharedPrefs.getBoolean("signed", false)) {
-            login.text = getString(R.string.login) + ": " + sharedPrefs.getString("login", "--")
-            dateOfBirth.text = getString(R.string.birthDate) + ": " + sharedPrefs.getString("birth_date", "--")
-            university.text = getString(R.string.university) + ": " + sharedPrefs.getString("university", "--")
-            firstName.text = getString(R.string.firstName) + ": " + sharedPrefs.getString("first_name", "--")
-            secondName.text = getString(R.string.secondName) + ": " + sharedPrefs.getString("second_name", "--")
-            thirdName.text = getString(R.string.thirdName) + ": " + sharedPrefs.getString("third_name", "--")
+            loginTV.text = getString(R.string.login) + ": " + sharedPrefs.getString("login", "--")
+            dateOfBirthTV.text = getString(R.string.birthDate) + ": " + sharedPrefs.getString("birth_date", "--")
+            universityTV.text = getString(R.string.university) + ": " + sharedPrefs.getString("university", "--")
+            firstNameTV.text = getString(R.string.firstName) + ": " + sharedPrefs.getString("first_name", "--")
+            secondNameTV.text = getString(R.string.secondName) + ": " + sharedPrefs.getString("second_name", "--")
+            thirdNameTV.text = getString(R.string.thirdName) + ": " + sharedPrefs.getString("third_name", "--")
         }
 
-        btn_logout.setOnClickListener {
+        logoutBtn.setOnClickListener {
             sharedPrefs.edit().putBoolean("signed", false).apply()
             startActivity(Intent(this, LoginActivity::class.java))
+        }
+
+        friendsListBtn.setOnClickListener {
+            startActivity(Intent(this, FriendsListActivity::class.java))
         }
     }
 }

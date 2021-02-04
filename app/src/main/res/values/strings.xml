@@ -23,6 +23,15 @@
     <string name="captcha">Символы с картинки</string>
     <string name="registr">Зарегестрироваться</string>
     <string name="signedAs">Вы вошли как:</string>
+    <string name="extra">ДОПОЛНИТЕЛЬНО</string>
+    <string name="add">ДОБАВИТЬ</string>
+    <string name="description">ОПИСАНИЕ</string>
+    <string name="date">ДАТА</string>
+    <string name="time">ВРЕМЯ</string>
+    <string name="number_of_people">КОЛИЧЕСТВО ЛЮДЕЙ</string>
+    <string name="price">ЦЕНА</string>
+    <string name="phone">ТЕЛЕФОН</string>
+    <string name="name">Название</string>
     <string name="title_activity_main_screen_scroll">ScrollingActivity</string>
     <string name="action_settings">Settings</string>
 </resources>

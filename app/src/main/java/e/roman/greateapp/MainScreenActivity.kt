@@ -9,17 +9,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.ListView
 import androidx.core.view.marginStart
 import androidx.core.view.marginTop
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
+import java.util.Collections.list
 
 class MainScreenActivity : AppCompatActivity(), View.OnClickListener{
 
     private lateinit var btnPerson: Button
     private lateinit var btnMyEvents: Button
     private lateinit var layout: LinearLayout
+    //private lateinit var layout: ListView
     private lateinit var base: FirebaseFirestore
     private lateinit var buttons: MutableList<Button>
     private lateinit var namesStr: String
@@ -32,6 +35,7 @@ class MainScreenActivity : AppCompatActivity(), View.OnClickListener{
         btnPerson = findViewById(R.id.btn_person)
         btnMyEvents = findViewById(R.id.btn_my_events)
         layout = findViewById(R.id.layout)
+        //layout = findViewById(R.id.list)
         base = FirebaseFirestore.getInstance()
         buttons = mutableListOf()
         namesStr = intent.getStringExtra("names")
@@ -97,9 +101,9 @@ class MainScreenActivity : AppCompatActivity(), View.OnClickListener{
 
     override fun onClick(view: View?){
         val text = (view as Button).text.toString()
-        var descr = "--"
+        //var descr = "--"
         var owner = "--"
-        var date = "--"
+        //var date = "--"
         val intent = Intent(this, EventActivity::class.java)
         val bundle = Bundle()
         base.collection("events").whereEqualTo("name", text).get().addOnSuccessListener {
@@ -114,6 +118,7 @@ class MainScreenActivity : AppCompatActivity(), View.OnClickListener{
                 bundle.putString("owner", owner)
                 bundle.putString("date", date)*/
                 val checks = doc["checks"].toString().split(" ") //0-description 1-date 2-time 3-people 4-price 5-phone
+                bundle.putString("checks", doc["checks"].toString())
                 if (checks[0] == "1")
                     bundle.putString("description", doc["description"].toString())
                 if (checks[1] == "1")
@@ -126,6 +131,7 @@ class MainScreenActivity : AppCompatActivity(), View.OnClickListener{
                     bundle.putString("price", doc["price"].toString())
                 if (checks[5] == "1")
                     bundle.putString("phone", doc["phone"].toString())
+                bundle.putString("id", doc.id)
                 intent.putExtras(bundle)
                 startActivity(intent)
             }
