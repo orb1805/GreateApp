@@ -47,41 +47,11 @@ class FriendsListActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(view: View?){
-        /*val text = (view as Button).text.toString()
-        //var descr = "--"
-        var owner = "--"
-        //var date = "--"
-        val intent = Intent(this, EventActivity::class.java)
+        val text = (view as Button).text.toString()
+        val intent = Intent(this, PersonViewerActivity::class.java)
         val bundle = Bundle()
-        base.collection("events").whereEqualTo("name", text).get().addOnSuccessListener {
-            for (doc in it){
-                //descr = doc["description"].toString()
-                owner = doc["owner"].toString()
-                bundle.putString("name", text)
-                bundle.putString("owner", owner)
-                /*date = doc["date"].toString()
-                bundle.putString("name", text)
-                bundle.putString("description", descr)
-                bundle.putString("owner", owner)
-                bundle.putString("date", date)*/
-                val checks = doc["checks"].toString().split(" ") //0-description 1-date 2-time 3-people 4-price 5-phone
-                bundle.putString("checks", doc["checks"].toString())
-                if (checks[0] == "1")
-                    bundle.putString("description", doc["description"].toString())
-                if (checks[1] == "1")
-                    bundle.putString("date", doc["date"].toString())
-                if (checks[2] == "1")
-                    bundle.putString("time", doc["time"].toString())
-                if (checks[3] == "1")
-                    bundle.putString("people", doc["people"].toString())
-                if (checks[4] == "1")
-                    bundle.putString("price", doc["price"].toString())
-                if (checks[5] == "1")
-                    bundle.putString("phone", doc["phone"].toString())
-                bundle.putString("id", doc.id)
-                intent.putExtras(bundle)
-                startActivity(intent)
-            }
-        }*/
+        bundle.putString("friend_login", text)
+        intent.putExtras(bundle)
+        startActivity(intent)
     }
 }
