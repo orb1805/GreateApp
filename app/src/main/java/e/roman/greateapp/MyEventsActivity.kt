@@ -42,7 +42,6 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
                     buttons.last().text = it["name"].toString()
                     buttons.last().setOnClickListener(this)
                     layout.addView(buttons.last())
-                    //buttons.last().setOnClickListener(this)
                 }
             }
         }

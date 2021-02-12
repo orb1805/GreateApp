@@ -27,6 +27,7 @@ class EventActivity : AppCompatActivity() {
         base = FirebaseFirestore.getInstance()
         layout = findViewById(R.id.layout_event)
         addTV(R.string.name, "name")
+        addTV(R.string.owner, "owner")
         val checks = intent.getStringExtra("checks").split(" ")
         if (checks[0] == "1")
             addTV(R.string.description, "description")
@@ -44,11 +45,11 @@ class EventActivity : AppCompatActivity() {
         val textView = TextView(this)
         base.collection("registers").whereEqualTo("event", intent.getStringExtra("id").toString()).get().addOnSuccessListener {
             if (it.isEmpty) {
-                textView.text = "Зарегестирирваны: пустенько немножко"
+                textView.text = "ЗАРЕГЕСТРИРОВАНЫ: пустенько немножко"
             }
             else{
                 for (doc in it) {
-                    textView.text = "Зарегестрированы: ${doc.get("users").toString()}"
+                    textView.text = "ЗАРЕГЕСТРИРОВАНЫ: ${doc.get("users").toString()}"
                 }
             }
         }
