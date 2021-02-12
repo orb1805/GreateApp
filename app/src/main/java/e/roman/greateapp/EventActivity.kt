@@ -15,7 +15,6 @@ import kotlin.math.log
 
 class EventActivity : AppCompatActivity() {
 
-    private lateinit var nameTV: TextView
     private lateinit var layout: LinearLayout
     private lateinit var registerBtn: Button
     private lateinit var base: FirebaseFirestore
@@ -27,51 +26,22 @@ class EventActivity : AppCompatActivity() {
 
         base = FirebaseFirestore.getInstance()
         layout = findViewById(R.id.layout_event)
-        val name = getString(R.string.name) + ": " + intent.getStringExtra("name")
-        var textView: TextView
-        nameTV = TextView(this)
-        nameTV.text = name
-        nameTV.textSize = resources.getDimension(R.dimen.text_size)
-        layout.addView(nameTV)
+        addTV(R.string.name, "name")
         val checks = intent.getStringExtra("checks").split(" ")
-        if (checks[0] == "1") {
-            textView = TextView(this)
-            textView.text = getString(R.string.description) + ": " + intent.getStringExtra("description")
-            textView.textSize = resources.getDimension(R.dimen.text_size)
-            layout.addView(textView)
-        }
-        if (checks[1] == "1") {
-            textView = TextView(this)
-            textView.text =  getString(R.string.date) + ": " + intent.getStringExtra("date")
-            textView.textSize = resources.getDimension(R.dimen.text_size)
-            layout.addView(textView)
-        }
-        if (checks[2] == "1") {
-            textView = TextView(this)
-            textView.text = getString(R.string.time) + ": " + intent.getStringExtra("time")
-            textView.textSize = resources.getDimension(R.dimen.text_size)
-            layout.addView(textView)
-        }
-        if (checks[3] == "1") {
-            textView = TextView(this)
-            textView.text = getString(R.string.number_of_people) + ": " + intent.getStringExtra("people")
-            textView.textSize = resources.getDimension(R.dimen.text_size)
-            layout.addView(textView)
-        }
-        if (checks[4] == "1") {
-            textView = TextView(this)
-            textView.text = getString(R.string.price) + ": " + intent.getStringExtra("price")
-            textView.textSize = resources.getDimension(R.dimen.text_size)
-            layout.addView(textView)
-        }
-        if (checks[5] == "1"){
-            textView = TextView(this)
-            textView.text = getString(R.string.phone) + ": " + intent.getStringExtra("phone")
-            textView.textSize = resources.getDimension(R.dimen.text_size)
-            layout.addView(textView)
-        }
+        if (checks[0] == "1")
+            addTV(R.string.description, "description")
+        if (checks[1] == "1")
+            addTV(R.string.date, "date")
+        if (checks[2] == "1")
+            addTV(R.string.time, "time")
+        if (checks[3] == "1")
+            addTV(R.string.number_of_people, "people")
+        if (checks[4] == "1")
+            addTV(R.string.price, "price")
+        if (checks[5] == "1")
+            addTV(R.string.phone, "phone")
 
-        textView = TextView(this)
+        val textView = TextView(this)
         base.collection("registers").whereEqualTo("event", intent.getStringExtra("id").toString()).get().addOnSuccessListener {
             if (it.isEmpty) {
                 textView.text = "Зарегестирирваны: пустенько немножко"
@@ -134,5 +104,13 @@ class EventActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun addTV(source: Int, stringName: String){
+        val name = getString(source) + ": " + intent.getStringExtra(stringName)
+        val textView = TextView(this)
+        textView.text = name
+        textView.textSize = resources.getDimension(R.dimen.text_size)
+        layout.addView(textView)
     }
 }
