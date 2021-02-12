@@ -28,7 +28,6 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
     private lateinit var sp: SharedPreferences
 
     private lateinit var etdescription: EditText
-    //private lateinit var cvDate: CalendarView
     private lateinit var etdate: EditText
     private lateinit var ettime: EditText
     private lateinit var etpeople: EditText
@@ -39,8 +38,6 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_creator)
 
-        /*btnAdd = findViewById(R.id.btn_add)
-        extraButton = findViewById(R.id.btn_extra)*/
         sp = getSharedPreferences("checked", Context.MODE_PRIVATE)
         layout = findViewById(R.id.layout)
         btnAdd = Button(this)
@@ -54,22 +51,14 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
         btnAdd.text = getString(R.string.add)//"ДОБАВИТЬ"
         layout.addView(extraButton)
         layout.addView(btnAdd)
-        /*etDescription = findViewById(R.id.et_description)
-        calendar = findViewById(R.id.calendar)*/
         base = FirebaseFirestore.getInstance()
         sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
         checked = mutableMapOf()
-        //sp.edit().putBoolean("description", false).apply()
         checked["description"] = false
-        //sp.edit().putBoolean("date", false).apply()
         checked["date"] = false
-        //sp.edit().putBoolean("time", false).apply()
         checked["time"] = false
-        //sp.edit().putBoolean("people", false).apply()
         checked["people"] = false
-        //sp.edit().putBoolean("price", false).apply()
         checked["price"] = false
-        //sp.edit().putBoolean("phone", false).apply()
         checked["phone"] = false
         sp.edit().putString("checks", "0 0 0 0 0 0").apply() //0-description 1-date 2-time 3-people 4-price 5-phone
     }
@@ -79,9 +68,8 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
 
         btnAdd.setOnClickListener {
             val name = etName.text.toString()
-            //val description = etDescription.text.toString()
             //TODO: проверка на заполненость всех полей
-            if (name.isNotEmpty()/* && description.isNotEmpty()*/) {
+            if (name.isNotEmpty()) {
                 val doc: MutableMap<String, Any> = HashMap()
                 doc["name"] = name
                 doc["owner"] = sharedPrefs.getString("login", "--").toString()
@@ -113,8 +101,6 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                             "Adding failed"
                         )
                     }
-                /*base.collection("registers").add(hashMapOf(
-                ))*/
                 sharedPrefs.edit().putString("new name", name).apply()
             }
             else this.onFailure("Заполните все поля")

@@ -17,6 +17,7 @@ class EventActivity : AppCompatActivity() {
 
     private lateinit var layout: LinearLayout
     private lateinit var registerBtn: Button
+    private lateinit var editBtn: Button
     private lateinit var base: FirebaseFirestore
     private lateinit var sharedPrefs : SharedPreferences
 
@@ -24,6 +25,7 @@ class EventActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event)
 
+        this.sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
         base = FirebaseFirestore.getInstance()
         layout = findViewById(R.id.layout_event)
         addTV(R.string.name, "name")
@@ -55,55 +57,23 @@ class EventActivity : AppCompatActivity() {
         }
         textView.textSize = resources.getDimension(R.dimen.text_size)
         layout.addView(textView)
-
-        registerBtn = Button(this)
-        registerBtn.text = getString(R.string.registr)
-        registerBtn.textSize = resources.getDimension(R.dimen.text_size)
-        registerBtn.width = LinearLayout.LayoutParams.MATCH_PARENT
-        registerBtn.height = LinearLayout.LayoutParams.WRAP_CONTENT
-        layout.addView(registerBtn)
-
-        registerBtn.setOnClickListener {
-            this.sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
-            base.collection("registers").whereEqualTo("event", intent.getStringExtra("id").toString()).get().addOnSuccessListener { it ->
-                if (it.isEmpty) {
-                    val document: MutableMap<String, Any> = HashMap()
-                    document["event"] = intent.getStringExtra("id").toString()
-                    document["users"] = listOf(sharedPrefs.getString("login", "--").toString())
-                    base.collection("registers").add(document)
-                }
-                else {
-                    for (doc in it) {
-                        val users = doc.get("users") as MutableList<String>
-                        val login = sharedPrefs.getString("login", "--").toString()
-                        var flag = true
-                        for (i in users) {
-                            Log.d("tttt", "$i $login")
-                            if (i == login)
-                                flag = false
-                        }
-                        if (flag)
-                            base.collection("users").document(login).get().addOnSuccessListener { it1 ->
-                                val friends = it1["friends"] as MutableList<String>
-                                for (i in users)
-                                    if (i !in friends) {
-                                        friends.add(i)
-                                        base.collection("users").document(i).get().addOnSuccessListener {
-                                            var friends1 = it["friends"] as MutableList<String>
-                                            friends1.add(login)
-                                            base.collection("users").document(i).update("friends", friends1)
-                                        }
-                                    }
-                                base.collection("users").document(login).update("friends", friends)
-                                users.add(sharedPrefs.getString("login", "--").toString())
-                                val document: MutableMap<String, Any> = HashMap()
-                                document["event"] = intent.getStringExtra("id").toString()
-                                document["users"] = users
-                                base.collection("registers").document(doc.id).set(document)
-                            }
-                    }
-                }
-            }
+        if(sharedPrefs.getString("login", "--").toString() == intent.getStringExtra("owner")){
+            editBtn = Button(this)
+            editBtn.text = getString(R.string.edit)
+            editBtn.textSize = resources.getDimension(R.dimen.text_size)
+            editBtn.width = LinearLayout.LayoutParams.MATCH_PARENT
+            editBtn.height = LinearLayout.LayoutParams.WRAP_CONTENT
+            editBtn.setOnClickListener { editBtnClickListener() }
+            layout.addView(editBtn)
+        }
+        else{
+            registerBtn = Button(this)
+            registerBtn.text = getString(R.string.registr)
+            registerBtn.textSize = resources.getDimension(R.dimen.text_size)
+            registerBtn.width = LinearLayout.LayoutParams.MATCH_PARENT
+            registerBtn.height = LinearLayout.LayoutParams.WRAP_CONTENT
+            registerBtn.setOnClickListener { registerBtnClickListener() }
+            layout.addView(registerBtn)
         }
     }
 
@@ -113,5 +83,51 @@ class EventActivity : AppCompatActivity() {
         textView.text = name
         textView.textSize = resources.getDimension(R.dimen.text_size)
         layout.addView(textView)
+    }
+
+    private fun registerBtnClickListener(){
+        base.collection("registers").whereEqualTo("event", intent.getStringExtra("id").toString()).get().addOnSuccessListener { it ->
+            if (it.isEmpty) {
+                val document: MutableMap<String, Any> = HashMap()
+                document["event"] = intent.getStringExtra("id").toString()
+                document["users"] = listOf(sharedPrefs.getString("login", "--").toString())
+                base.collection("registers").add(document)
+            }
+            else {
+                for (doc in it) {
+                    val users = doc.get("users") as MutableList<String>
+                    val login = sharedPrefs.getString("login", "--").toString()
+                    var flag = true
+                    for (i in users) {
+                        Log.d("tttt", "$i $login")
+                        if (i == login)
+                            flag = false
+                    }
+                    if (flag)
+                        base.collection("users").document(login).get().addOnSuccessListener { it1 ->
+                            val friends = it1["friends"] as MutableList<String>
+                            for (i in users)
+                                if (i !in friends) {
+                                    friends.add(i)
+                                    base.collection("users").document(i).get().addOnSuccessListener {
+                                        var friends1 = it["friends"] as MutableList<String>
+                                        friends1.add(login)
+                                        base.collection("users").document(i).update("friends", friends1)
+                                    }
+                                }
+                            base.collection("users").document(login).update("friends", friends)
+                            users.add(sharedPrefs.getString("login", "--").toString())
+                            val document: MutableMap<String, Any> = HashMap()
+                            document["event"] = intent.getStringExtra("id").toString()
+                            document["users"] = users
+                            base.collection("registers").document(doc.id).set(document)
+                        }
+                }
+            }
+        }
+    }
+
+    private fun editBtnClickListener(){
+
     }
 }

@@ -27,7 +27,12 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
         sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
         layout = findViewById(R.id.layout_my_events)
         btnAdd = findViewById(R.id.btn_add)
-        btnAdd.setOnClickListener { startActivity(Intent(this, EventCreatorActivity::class.java)) }
+        btnAdd.setOnClickListener {
+            val intent = Intent(this, EventCreatorActivity::class.java)
+            /*val bundle = Bundle()
+            bundle.putBoolean("is_edit", false)*/
+            startActivity(intent)
+        }
         //TODO: по-моему дальше пизда начинается
         base.collection("registers").whereArrayContains("users", sharedPrefs.getString("login", "--").toString()).get().addOnSuccessListener {
             for (doc in it){
