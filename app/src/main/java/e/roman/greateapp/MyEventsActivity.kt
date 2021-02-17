@@ -3,6 +3,8 @@
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -16,13 +18,15 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var layout: LinearLayout
     private lateinit var base: FirebaseFirestore
     private lateinit var sharedPrefs: SharedPreferences
-    private lateinit var buttons: MutableList<Button>
+    private lateinit var buttonsRegs: MutableList<Button>
+    private lateinit var buttonsMy: MutableList<Button>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_events)
 
-        buttons = mutableListOf()
+        buttonsRegs = mutableListOf()
+        buttonsMy = mutableListOf()
         base = FirebaseFirestore.getInstance()
         sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
         layout = findViewById(R.id.layout_my_events)
@@ -34,19 +38,39 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
             startActivity(intent)
         }
         //TODO: по-моему дальше пизда начинается
-        base.collection("registers").whereArrayContains("users", sharedPrefs.getString("login", "--").toString()).get().addOnSuccessListener {
-            for (doc in it){
-                base.collection("events").document(doc["event"].toString()).get().addOnSuccessListener {
-                    buttons.add(Button(layout.context))
-                    val params = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        wallpaperDesiredMinimumHeight / 6
-                    )
-                    params.topMargin = 80
-                    buttons.last().layoutParams = params
-                    buttons.last().text = it["name"].toString()
-                    buttons.last().setOnClickListener(this)
-                    layout.addView(buttons.last())
+        var count = 0
+        base.collection("registers").whereArrayContains("users", sharedPrefs.getString("login", "--").toString()).get().addOnSuccessListener { it1 ->
+            for (doc in it1){
+                base.collection("events").document(doc["event"].toString()).get().addOnSuccessListener { it2 ->
+                    if(it2["owner"] == sharedPrefs.getString("login", "--").toString()) {
+                        buttonsMy.add(Button(layout.context))
+                        val params = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            wallpaperDesiredMinimumHeight / 6
+                        )
+                        params.topMargin = 80
+                        buttonsMy.last().layoutParams = params
+                        buttonsMy.last().text = it2["name"].toString()
+                        buttonsMy.last().setBackgroundColor(Color.BLACK)
+                        buttonsMy.last().setTextColor(Color.WHITE)
+                        buttonsMy.last().setOnClickListener(this)
+                        //layout.addView(buttonsMy.last())
+                    }
+                    else {
+                        buttonsRegs.add(Button(layout.context))
+                        val params = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            wallpaperDesiredMinimumHeight / 6
+                        )
+                        params.topMargin = 80
+                        buttonsRegs.last().layoutParams = params
+                        buttonsRegs.last().text = it2["name"].toString()
+                        buttonsRegs.last().setOnClickListener(this)
+                        //layout.addView(buttonsRegs.last())
+                    }
+                    count++
+                    if (count == it1.size())
+                        addButtons()
                 }
             }
         }
@@ -81,5 +105,12 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
                 startActivity(intent)
             }
         }
+    }
+
+    private fun addButtons(){
+        for (i in buttonsMy)
+            layout.addView(i)
+        for (i in buttonsRegs)
+            layout.addView(i)
     }
 }
