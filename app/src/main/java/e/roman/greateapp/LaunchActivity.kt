@@ -11,38 +11,38 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.math.sign
 
 class LaunchActivity : AppCompatActivity() {
-    private lateinit var shared_prefs : SharedPreferences
+
+    private lateinit var sharedPrefs : SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launch)
+
         //инциализация всех ресурсов
-        shared_prefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
     }
 
     override fun onResume() {
         super.onResume()
+
         val intent : Intent
-        val signed = shared_prefs.getBoolean("signed", false)
-        intent = if(signed){
+        val signed = sharedPrefs.getBoolean("signed", false)
+        if(signed){
             //TODO: проверка на совпадение ранее введенного пароля с тем, что есть в базе
-            Intent(this, MainScreenActivity::class.java)
-        } else{
-            Intent(this, LoginActivity::class.java)
-        }
-
-        var names = ""
-        val base = FirebaseFirestore.getInstance()
-        var i = 0
-        base.collection("events").get().addOnSuccessListener {
-            for (doc in it) {
-                    names += "/" + doc["name"]!!.toString()
-                i++
+            intent = Intent(this, MainScreenActivity::class.java)
+            var names = ""
+            val base = FirebaseFirestore.getInstance()
+            val login = sharedPrefs.getString("login", "--")
+            base.collection("events").get().addOnSuccessListener {
+                for (doc in it)
+                    if (doc["owner"].toString() != login)
+                        names += "/" + doc["name"]!!.toString()
+                val bundle = Bundle()
+                bundle.putString("names", names)
+                intent.putExtras(bundle)
+                startActivity(intent)
             }
-            val bundle = Bundle()
-            bundle.putString("names", names)
-            intent.putExtras(bundle)
-
-            startActivity(intent)
-        }
+        } else
+            startActivity(Intent(this, LoginActivity::class.java))
     }
 }
