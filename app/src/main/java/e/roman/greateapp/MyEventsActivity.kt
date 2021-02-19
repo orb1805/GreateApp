@@ -33,8 +33,6 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
         btnAdd = findViewById(R.id.btn_add)
         btnAdd.setOnClickListener {
             val intent = Intent(this, EventCreatorActivity::class.java)
-            /*val bundle = Bundle()
-            bundle.putBoolean("is_edit", false)*/
             startActivity(intent)
         }
         //TODO: по-моему дальше пизда начинается
@@ -66,7 +64,6 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
                         buttonsRegs.last().layoutParams = params
                         buttonsRegs.last().text = it2["name"].toString()
                         buttonsRegs.last().setOnClickListener(this)
-                        //layout.addView(buttonsRegs.last())
                     }
                     count++
                     if (count == it1.size())

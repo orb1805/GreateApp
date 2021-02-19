@@ -16,16 +16,20 @@ import kotlin.math.log
 class EventActivity : AppCompatActivity() {
 
     private lateinit var layout: LinearLayout
-    private lateinit var registerBtn: Button
-    private lateinit var editBtn: Button
+    /*private lateinit var registerBtn: Button
+    private lateinit var editBtn: Button*/
+    private lateinit var functionalBtn: Button
     private lateinit var base: FirebaseFirestore
     private lateinit var sharedPrefs : SharedPreferences
+    private lateinit var login: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event)
 
         this.sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        login = sharedPrefs.getString("login", "--").toString()
+        var notOwner = true
         base = FirebaseFirestore.getInstance()
         layout = findViewById(R.id.layout_event)
         addTV(R.string.name, "name")
@@ -44,6 +48,21 @@ class EventActivity : AppCompatActivity() {
         if (checks[5] == "1")
             addTV(R.string.phone, "phone")
 
+        functionalBtn = Button(this)
+        functionalBtn.textSize = resources.getDimension(R.dimen.text_size)
+        functionalBtn.width = LinearLayout.LayoutParams.MATCH_PARENT
+        functionalBtn.height = LinearLayout.LayoutParams.WRAP_CONTENT
+        if(login == intent.getStringExtra("owner")){
+            Log.d("check", "set edit click")
+            functionalBtn.text = getString(R.string.edit)
+            functionalBtn.setOnClickListener { editBtnClickListener() }
+            notOwner = false
+        }
+        /*else{
+            functionalBtn.text = getString(R.string.registr)
+            //functionalBtn.setOnClickListener { registerBtnClickListener() }
+        }*/
+        layout.addView(functionalBtn)
         val textView = TextView(this)
         base.collection("registers").whereEqualTo("event", intent.getStringExtra("id").toString()).get().addOnSuccessListener {
             if (it.isEmpty) {
@@ -52,29 +71,23 @@ class EventActivity : AppCompatActivity() {
             else{
                 for (doc in it) {
                     textView.text = "ЗАРЕГЕСТРИРОВАНЫ: ${doc.get("users").toString()}"
+                    if (notOwner) {
+                        if (login in (doc.get("users") as List<*>)) {
+                            Log.d("check", "set unreg click")
+                            functionalBtn.text = getString(R.string.un_registr)
+                            functionalBtn.setOnClickListener { unRegisterBtnClickListener() }
+                        }
+                        else{
+                            Log.d("check", "set reg click")
+                            functionalBtn.text = getString(R.string.registr)
+                            functionalBtn.setOnClickListener { registerBtnClickListener() }
+                        }
+                    }
                 }
             }
         }
         textView.textSize = resources.getDimension(R.dimen.text_size)
         layout.addView(textView)
-        if(sharedPrefs.getString("login", "--").toString() == intent.getStringExtra("owner")){
-            editBtn = Button(this)
-            editBtn.text = getString(R.string.edit)
-            editBtn.textSize = resources.getDimension(R.dimen.text_size)
-            editBtn.width = LinearLayout.LayoutParams.MATCH_PARENT
-            editBtn.height = LinearLayout.LayoutParams.WRAP_CONTENT
-            editBtn.setOnClickListener { editBtnClickListener() }
-            layout.addView(editBtn)
-        }
-        else{
-            registerBtn = Button(this)
-            registerBtn.text = getString(R.string.registr)
-            registerBtn.textSize = resources.getDimension(R.dimen.text_size)
-            registerBtn.width = LinearLayout.LayoutParams.MATCH_PARENT
-            registerBtn.height = LinearLayout.LayoutParams.WRAP_CONTENT
-            registerBtn.setOnClickListener { registerBtnClickListener() }
-            layout.addView(registerBtn)
-        }
     }
 
     private fun addTV(source: Int, stringName: String){
@@ -86,6 +99,7 @@ class EventActivity : AppCompatActivity() {
     }
 
     private fun registerBtnClickListener(){
+        Log.d("check", "Register click")
         base.collection("registers").whereEqualTo("event", intent.getStringExtra("id").toString()).get().addOnSuccessListener { it ->
             if (it.isEmpty) {
                 val document: MutableMap<String, Any> = HashMap()
@@ -99,7 +113,6 @@ class EventActivity : AppCompatActivity() {
                     val login = sharedPrefs.getString("login", "--").toString()
                     var flag = true
                     for (i in users) {
-                        Log.d("tttt", "$i $login")
                         if (i == login)
                             flag = false
                     }
@@ -127,7 +140,21 @@ class EventActivity : AppCompatActivity() {
         }
     }
 
+    private fun unRegisterBtnClickListener(){
+        base.collection("registers").whereEqualTo("event", intent.getStringExtra("id").toString()).get().addOnSuccessListener {
+            for (doc in it) {
+                val users = doc.get("users") as MutableList<String>
+                Log.d("check", "$users - $login")
+                users.remove(login)
+                Log.d("check", "$users - $login")
+                Log.d("check", "${doc.id}")
+                base.collection("registers").document(doc.id).update("users", users).addOnSuccessListener { Log.d("check", "success deletion") }
+            }
+        }
+    }
+
     private fun editBtnClickListener(){
 
     }
+
 }

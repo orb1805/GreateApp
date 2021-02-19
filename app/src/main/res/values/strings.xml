@@ -22,6 +22,7 @@
     <string name="university">Название учебного заведения</string>
     <string name="captcha">Символы с картинки</string>
     <string name="registr">Зарегестрироваться</string>
+    <string name="un_registr">ЛИВНУТЬ</string>
     <string name="edit">Редактировать</string>
     <string name="signedAs">Вы вошли как:</string>
     <string name="extra">ДОПОЛНИТЕЛЬНО</string>
