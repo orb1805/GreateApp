@@ -69,12 +69,13 @@ class LoginActivity : AppCompatActivity(), FireBaseListener{
     override fun onSuccess(document: DocumentSnapshot?) {
         Log.d("check22", "onSuccess start")
         //val intent = Intent(this, MainScreenActivity::class.java)
-        db.collection(getString(R.string.coll_path_universities)).document(document!![getString(R.string.coll_path_universities)].toString()).get().addOnSuccessListener { doc ->
+        db.collection(getString(R.string.coll_path_universities)).document(document!![getString(R.string.field_university)].toString()).get().addOnSuccessListener { doc ->
             if (doc != null) {
                 sharedPrefs.edit().putString(
-                    getString(R.string.coll_path_universities),
+                    getString(R.string.field_university),
                     doc!![getString(R.string.field_name)].toString()
                 ).apply()
+                Log.d("check22",  doc!![getString(R.string.field_name)].toString())
                 sharedPrefs.edit().putBoolean(getString(R.string.field_signed), true).apply()
                 sharedPrefs.edit()
                     .putString(getString(R.string.field_login), this.login.text.toString()).apply()
