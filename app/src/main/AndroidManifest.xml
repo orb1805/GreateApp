@@ -13,16 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".PersonViewerActivity"></activity>
+        <activity android:name=".PersonViewerActivity" />
         <activity android:name=".FriendsListActivity" />
         <activity android:name=".ExtrasActivity" />
         <activity android:name=".EventActivity" />
         <activity android:name=".EventCreatorActivity" />
         <activity android:name=".MyEventsActivity" />
-        <activity
-            android:name=".MainScreenScrollActivity"
-            android:label="@string/title_activity_main_screen_scroll"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".RegLogActivity" />
         <activity android:name=".RegUnivActivity" />
         <activity android:name=".RegNameActivity" />

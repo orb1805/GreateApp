@@ -31,6 +31,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
+        <Button
+            android:id="@+id/btn_remove_add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

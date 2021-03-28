@@ -62,7 +62,7 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
         password = findViewById(R.id.textInputPassword)
         repeatPassword = findViewById(R.id.textInputRepeatPassword)
         captcha = findViewById(R.id.textInputCaptcha)
-        sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
         isMan = findViewById(R.id.radioButtonM)
         isWoman = findViewById(R.id.radioButtonW)
         webView = findViewById(R.id.webView)
@@ -83,16 +83,6 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
     }
 
     private fun addUser(){
-        /*val firstName = firstName.text.toString()
-        val secondName = secondName.text.toString()
-        val thirdName = thirdName.text.toString()
-        val university = university.text.toString()
-        val birthDate = birthDate.text.toString()
-        val captcha = captcha.text.toString()
-        val gender = if(isMan.isChecked) 1 else if(isWoman.isChecked) 0 else -1
-        val login = login.text.toString()
-        val password = password.text.toString()
-        val repeatPassword = repeatPassword.text.toString()*/
         firstNameStr = firstName.text.toString()
         secondNameStr = secondName.text.toString()
         thirdNameStr = thirdName.text.toString()
@@ -125,24 +115,9 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
                             }
                             1 -> { // найден в реестре
                                 Log.d("MyLogCheckData", "Student Found")
-                                //DataBase.addUser(User(login, password, firstName, secondName, thirdName,
-                                 //   universityId, birthDate))
                                 univId = universityId
                                 DataBase.addUser(loginStr, passwordStr, firstNameStr, secondNameStr, thirdNameStr,
                                     universityId, birthDateStr, context)
-                                /*//TODO: исполнение следующих строк, если пользователь успешно записан в нашу базу
-                                sharedPrefs.edit().putBoolean("signed", true).apply()
-                                sharedPrefs.edit().putString("login", login).apply()
-                                //sharedPrefs.edit().putString("password", password).apply()
-                                sharedPrefs.edit().putString("first_name", firstName).apply()
-                                sharedPrefs.edit().putString("second_name", secondName).apply()
-                                sharedPrefs.edit().putString("third_name", thirdName).apply()
-                                dataBase.collection("universities").document(universityId).get().addOnSuccessListener { document ->
-                                    if(document != null)
-                                        sharedPrefs.edit().putString("university", document!!["name"].toString()).apply()
-                                }
-                                sharedPrefs.edit().putString("birth_date", birthDate).apply()
-                                startActivity(Intent(context, MainScreenActivity::class.java))*/
                             }
                             2 -> { // неверная каптча
                                 Log.d("MyLogCheckData", "Wrong captcha")
@@ -164,22 +139,21 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
     }
 
     override fun onSuccess(document: DocumentSnapshot?) {
-        sharedPrefs.edit().putBoolean("signed", true).apply()
-        sharedPrefs.edit().putString("login", loginStr).apply()
-        //sharedPrefs.edit().putString("password", password).apply()
-        sharedPrefs.edit().putString("first_name", firstNameStr).apply()
-        sharedPrefs.edit().putString("second_name", secondNameStr).apply()
-        sharedPrefs.edit().putString("third_name", thirdNameStr).apply()
-        dataBase.collection("universities").document(univId).get().addOnSuccessListener { document ->
+        sharedPrefs.edit().putBoolean(getString(R.string.field_signed), true).apply()
+        sharedPrefs.edit().putString(getString(R.string.field_login), loginStr).apply()
+        sharedPrefs.edit().putString(getString(R.string.field_first_name), firstNameStr).apply()
+        sharedPrefs.edit().putString(getString(R.string.field_second_name), secondNameStr).apply()
+        sharedPrefs.edit().putString(getString(R.string.field_third_name), thirdNameStr).apply()
+        dataBase.collection(getString(R.string.coll_path_universities)).document(univId).get().addOnSuccessListener { document ->
             if(document != null)
-                sharedPrefs.edit().putString("university", document!!["name"].toString()).apply()
+                sharedPrefs.edit().putString(getString(R.string.field_university), document!![getString(R.string.field_name)].toString()).apply()
         }
-        sharedPrefs.edit().putString("birth_date", birthDateStr).apply()
+        sharedPrefs.edit().putString(getString(R.string.field_birth_date), birthDateStr).apply()
         startActivity(Intent(RegActivity@this, MainScreenActivity::class.java))
     }
 
     override fun onFailure(msg : String?) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-        sharedPrefs.edit().putBoolean("signed", false).apply()
+        sharedPrefs.edit().putBoolean(getString(R.string.field_signed), false).apply()
     }
 }

@@ -28,7 +28,7 @@ class LoginActivity : AppCompatActivity(), FireBaseListener{
         this.btnLogin = findViewById(R.id.btn_login)
         this.login = findViewById(R.id.login)
         this.password = findViewById(R.id.password)
-        this.sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        this.sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
         this.db = FirebaseFirestore.getInstance()
     }
 
@@ -36,7 +36,6 @@ class LoginActivity : AppCompatActivity(), FireBaseListener{
         super.onResume()
 
         btnReg.setOnClickListener {
-            //val intent = Intent(this, RegActivity::class.java)
             val intent = Intent(this, RegNameActivity::class.java)
             startActivity(intent)
         }
@@ -48,9 +47,9 @@ class LoginActivity : AppCompatActivity(), FireBaseListener{
         val login = this.login.text.toString()
         val password = this.password.text.toString().toMD5()
         if (login.isNotEmpty() && password.isNotEmpty()) {
-            db.collection("users").document(login).get().addOnSuccessListener { document ->
+            db.collection(getString(R.string.field_users)).document(login).get().addOnSuccessListener { document ->
                 if (document != null) {
-                    if (document.data?.get("password")?.toString()  == password) {
+                    if (document.data?.get(getString(R.string.field_password))?.toString()  == password) {
                         this.onSuccess(document)
                     } else {
                         this.onFailure("Пароли не совпадают")
@@ -67,22 +66,22 @@ class LoginActivity : AppCompatActivity(), FireBaseListener{
 
     override fun onSuccess(document: DocumentSnapshot?) {
         val intent = Intent(this, MainScreenActivity::class.java)
-        db.collection("universities").document(document!!["university"].toString()).get().addOnSuccessListener { document ->
-            if (document != null)
-                sharedPrefs.edit().putString("university", document!!["name"].toString()).apply()
+        db.collection(getString(R.string.coll_path_universities)).document(document!![getString(R.string.coll_path_universities)].toString()).get().addOnSuccessListener { doc ->
+            if (doc != null)
+                sharedPrefs.edit().putString(getString(R.string.coll_path_universities), doc!![getString(R.string.field_name)].toString()).apply()
         }
-        sharedPrefs.edit().putBoolean("signed", true).apply()
-        sharedPrefs.edit().putString("login", this.login.text.toString()).apply()
-        sharedPrefs.edit().putString("first_name", document!!["first_name"].toString()).apply()
-        sharedPrefs.edit().putString("second_name", document["second_name"].toString()).apply()
-        sharedPrefs.edit().putString("third_name", document["third_name"].toString()).apply()
-        sharedPrefs.edit().putString("birth_date", document["birth_date"].toString()).apply()
+        sharedPrefs.edit().putBoolean(getString(R.string.field_signed), true).apply()
+        sharedPrefs.edit().putString(getString(R.string.field_login), this.login.text.toString()).apply()
+        sharedPrefs.edit().putString(getString(R.string.first_name), document!![getString(R.string.field_first_name)].toString()).apply()
+        sharedPrefs.edit().putString(getString(R.string.field_second_name), document[getString(R.string.field_second_name)].toString()).apply()
+        sharedPrefs.edit().putString(getString(R.string.field_third_name), document[getString(R.string.field_third_name)].toString()).apply()
+        sharedPrefs.edit().putString(getString(R.string.field_birth_date), document[getString(R.string.field_birth_date)].toString()).apply()
         startActivity(intent)
     }
 
     override fun onFailure(msg : String?) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-        sharedPrefs.edit().putBoolean("signed", false).apply()
+        sharedPrefs.edit().putBoolean(getString(R.string.field_signed), false).apply()
     }
 
 }

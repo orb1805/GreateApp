@@ -31,7 +31,7 @@ class RegLogActivity : AppCompatActivity() {
         password = findViewById(R.id.textInputPassword)
         repeatPassword = findViewById(R.id.textInputRepeatPassword)
         nextBtn = findViewById(R.id.next_btn)
-        sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
         dataBase = FirebaseFirestore.getInstance()
     }
 

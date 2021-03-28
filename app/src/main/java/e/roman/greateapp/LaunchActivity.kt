@@ -19,24 +19,24 @@ class LaunchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_launch)
 
         //инциализация всех ресурсов
-        sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
     }
 
     override fun onResume() {
         super.onResume()
 
         val intent : Intent
-        val signed = sharedPrefs.getBoolean("signed", false)
+        val signed = sharedPrefs.getBoolean(getString(R.string.field_signed), false)
         if(signed){
             //TODO: проверка на совпадение ранее введенного пароля с тем, что есть в базе
             intent = Intent(this, MainScreenActivity::class.java)
             var names = ""
             val base = FirebaseFirestore.getInstance()
-            val login = sharedPrefs.getString("login", "--")
-            base.collection("events").get().addOnSuccessListener {
+            val login = sharedPrefs.getString(getString(R.string.field_login), "--")
+            base.collection(getString(R.string.coll_path_events)).get().addOnSuccessListener {
                 for (doc in it)
-                    if (doc["owner"].toString() != login)
-                        names += "/" + doc["name"]!!.toString()
+                    if (doc[getString(R.string.field_owner)].toString() != login)
+                        names += "/" + doc[getString(R.string.field_name)]!!.toString()
                 val bundle = Bundle()
                 bundle.putString("names", names)
                 intent.putExtras(bundle)

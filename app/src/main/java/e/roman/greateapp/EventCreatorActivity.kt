@@ -1,17 +1,14 @@
 package e.roman.greateapp
 
-import android.app.ActionBar
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.marginBottom
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import java.text.SimpleDateFormat
 import java.util.*
 
 class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
@@ -38,7 +35,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_creator)
 
-        sp = getSharedPreferences("checked", Context.MODE_PRIVATE)
+        sp = getSharedPreferences( getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE)
         layout = findViewById(R.id.layout)
         btnAdd = Button(this)
         extraButton = Button(this)
@@ -52,15 +49,15 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
         layout.addView(extraButton)
         layout.addView(btnAdd)
         base = FirebaseFirestore.getInstance()
-        sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
         checked = mutableMapOf()
-        checked["description"] = false
-        checked["date"] = false
-        checked["time"] = false
-        checked["people"] = false
-        checked["price"] = false
-        checked["phone"] = false
-        sp.edit().putString("checks", "0 0 0 0 0 0").apply() //0-description 1-date 2-time 3-people 4-price 5-phone
+        checked[getString(R.string.field_description)] = false
+        checked[getString(R.string.field_date)] = false
+        checked[getString(R.string.field_time)] = false
+        checked[getString(R.string.field_people)] = false
+        checked[getString(R.string.field_price)] = false
+        checked[getString(R.string.field_phone)] = false
+        sp.edit().putString(getString(R.string.field_checks), "0 0 0 0 0 0").apply() //0-description 1-date 2-time 3-people 4-price 5-phone
     }
 
     override fun onResume() {
@@ -71,36 +68,32 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
             //TODO: проверка на заполненость всех полей
             if (name.isNotEmpty()) {
                 val doc: MutableMap<String, Any> = HashMap()
-                doc["name"] = name
-                doc["owner"] = sharedPrefs.getString("login", "--").toString()
+                doc[getString(R.string.field_name)] = name
+                doc[getString(R.string.field_owner)] = sharedPrefs.getString(getString(R.string.field_login), "--").toString()
 
-                if (checked["description"]!!) {
-                    doc["description"] = etdescription.text.toString()
+                if (checked[getString(R.string.field_description)]!!) {
+                    doc[getString(R.string.field_description)] = etdescription.text.toString()
                 }
-                if (checked["date"]!!) {
-                    doc["date"] = etdate.text.toString()
+                if (checked[getString(R.string.field_date)]!!) {
+                    doc[getString(R.string.field_date)] = etdate.text.toString()
                     //doc["date"] = cvDate.date
                 }
-                if (checked["time"]!!) {
-                    doc["time"] = ettime.text.toString()
+                if (checked[getString(R.string.field_time)]!!) {
+                    doc[getString(R.string.field_time)] = ettime.text.toString()
                 }
-                if (checked["people"]!!) {
-                    doc["people"] = etpeople.text.toString()
+                if (checked[getString(R.string.field_people)]!!) {
+                    doc[getString(R.string.field_people)] = etpeople.text.toString()
                 }
-                if (checked["price"]!!) {
-                    doc["price"] = etprice.text.toString()
+                if (checked[getString(R.string.field_price)]!!) {
+                    doc[getString(R.string.field_price)] = etprice.text.toString()
                 }
-                if (checked["phone"]!!) {
-                    doc["phone"] = etphone.text.toString()
+                if (checked[getString(R.string.field_phone)]!!) {
+                    doc[getString(R.string.field_phone)] = etphone.text.toString()
                 }
-                doc["checks"] = sp.getString("checks", "0 0 0 0 0 0")!!
+                doc[getString(R.string.field_checks)] = sp.getString(getString(R.string.field_checks), "0 0 0 0 0 0")!!
 
-                base.collection("events").add(doc).addOnSuccessListener { this.onSuccess(null) }
-                    .addOnFailureListener {
-                        this.onFailure(
-                            "Adding failed"
-                        )
-                    }
+                base.collection(getString(R.string.coll_path_events)).add(doc).addOnSuccessListener { this.onSuccess(null) }
+                    .addOnFailureListener { this.onFailure("Adding failed") }
                 sharedPrefs.edit().putString("new name", name).apply()
             }
             else this.onFailure("Заполните все поля")
@@ -115,12 +108,12 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
     override fun onRestart() {
         super.onRestart()
 
-        val checked1 = sp.getString("checks", "0 0 0 0 0 0")!!.split(" ")
+        val checked1 = sp.getString(getString(R.string.field_checks), "0 0 0 0 0 0")!!.split(" ")
         layout.removeView(btnAdd)
         layout.removeView(extraButton)
         if (checked1[0] == "1") {
-            if (!checked["description"]!!) {
-                checked["description"] = true
+            if (!checked[getString(R.string.field_description)]!!) {
+                checked[getString(R.string.field_description)] = true
                 var la = TextInputLayout(this)
                 etdescription = EditText(this)
                 etdescription.hint = getString(R.string.description)//"ОПИСАНИЕ"
@@ -131,8 +124,8 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
             }
         }
         if (checked1[1] == "1") {
-            if (!checked["date"]!!) {
-                checked["date"] = true
+            if (!checked[getString(R.string.field_date)]!!) {
+                checked[getString(R.string.field_date)] = true
                 var la = TextInputLayout(this)
                 etdate = EditText(this)
                 etdate.hint = getString(R.string.date)//"ДАТА"
@@ -143,8 +136,8 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
             }
         }
         if (checked1[2] == "1") {
-            if (!checked["time"]!!) {
-                checked["time"] = true
+            if (!checked[getString(R.string.field_time)]!!) {
+                checked[getString(R.string.field_time)] = true
                 var la = TextInputLayout(this)
                 ettime = EditText(this)
                 ettime.hint = getString(R.string.time)//"ВРЕМЯ"
@@ -155,8 +148,8 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
             }
         }
         if (checked1[3] == "1") {
-            if (!checked["people"]!!) {
-                checked["people"] = true
+            if (!checked[getString(R.string.field_people)]!!) {
+                checked[getString(R.string.field_people)] = true
                 var la = TextInputLayout(this)
                 etpeople = EditText(this)
                 etpeople.hint = getString(R.string.number_of_people)//"КОЛИЧЕСТВО ЛЮДЕЙ"
@@ -167,8 +160,8 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
             }
         }
         if (checked1[4] == "1") {
-            if (!checked["price"]!!) {
-                checked["price"] = true
+            if (!checked[getString(R.string.field_price)]!!) {
+                checked[getString(R.string.field_price)] = true
                 var la = TextInputLayout(this)
                 etprice = EditText(this)
                 etprice.hint = getString(R.string.price)//"ЦЕНА"
@@ -179,8 +172,8 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
             }
         }
         if (checked1[5] == "1") {
-            if (!checked["phone"]!!) {
-                checked["phone"] = true
+            if (!checked[getString(R.string.field_phone)]!!) {
+                checked[getString(R.string.field_phone)] = true
                 var la = TextInputLayout(this)
                 etphone = EditText(this)
                 etphone.hint = getString(R.string.phone)//"ТЕЛЕФОН"

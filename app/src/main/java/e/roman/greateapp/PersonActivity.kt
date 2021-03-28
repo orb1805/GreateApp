@@ -33,23 +33,23 @@ class PersonActivity : AppCompatActivity() {
         thirdNameTV = findViewById(R.id.txt_third_name)
         logoutBtn = findViewById(R.id.btn_logout)
         friendsListBtn = findViewById(R.id.btn_friends_list)
-        sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
     }
 
     override fun onResume() {
         super.onResume()
 
-        if(sharedPrefs.getBoolean("signed", false)) {
-            loginTV.text = getString(R.string.login) + ": " + sharedPrefs.getString("login", "--")
-            dateOfBirthTV.text = getString(R.string.birthDate) + ": " + sharedPrefs.getString("birth_date", "--")
-            universityTV.text = getString(R.string.university) + ": " + sharedPrefs.getString("university", "--")
-            firstNameTV.text = getString(R.string.firstName) + ": " + sharedPrefs.getString("first_name", "--")
-            secondNameTV.text = getString(R.string.secondName) + ": " + sharedPrefs.getString("second_name", "--")
-            thirdNameTV.text = getString(R.string.thirdName) + ": " + sharedPrefs.getString("third_name", "--")
+        if(sharedPrefs.getBoolean(getString(R.string.field_signed), false)) {
+            loginTV.text = getString(R.string.field_in_profile, getString(R.string.login), sharedPrefs.getString(getString(R.string.field_login), "--"))
+            dateOfBirthTV.text = getString(R.string.field_in_profile, getString(R.string.birth_date), sharedPrefs.getString(getString(R.string.field_birth_date), "--"))
+            universityTV.text =  getString(R.string.field_in_profile, getString(R.string.university), sharedPrefs.getString(getString(R.string.field_university), "--"))
+            firstNameTV.text =  getString(R.string.field_in_profile, getString(R.string.first_name), sharedPrefs.getString(getString(R.string.field_first_name), "--"))
+            secondNameTV.text =  getString(R.string.field_in_profile, getString(R.string.second_name), sharedPrefs.getString(getString(R.string.field_second_name), "--"))
+            thirdNameTV.text =  getString(R.string.field_in_profile, getString(R.string.third_name), sharedPrefs.getString(getString(R.string.field_third_name), "--"))
         }
 
         logoutBtn.setOnClickListener {
-            sharedPrefs.edit().putBoolean("signed", false).apply()
+            sharedPrefs.edit().putBoolean(getString(R.string.field_signed), false).apply()
             startActivity(Intent(this, LoginActivity::class.java))
         }
 

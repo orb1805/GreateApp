@@ -28,7 +28,7 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
         buttonsRegs = mutableListOf()
         buttonsMy = mutableListOf()
         base = FirebaseFirestore.getInstance()
-        sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
         layout = findViewById(R.id.layout_my_events)
         btnAdd = findViewById(R.id.btn_add)
         btnAdd.setOnClickListener {
@@ -37,10 +37,10 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
         }
         //TODO: по-моему дальше пизда начинается
         var count = 0
-        base.collection("registers").whereArrayContains("users", sharedPrefs.getString("login", "--").toString()).get().addOnSuccessListener { it1 ->
+        base.collection(getString(R.string.coll_path_registers)).whereArrayContains(getString(R.string.field_users), sharedPrefs.getString(getString(R.string.field_login), "--").toString()).get().addOnSuccessListener { it1 ->
             for (doc in it1){
-                base.collection("events").document(doc["event"].toString()).get().addOnSuccessListener { it2 ->
-                    if(it2["owner"] == sharedPrefs.getString("login", "--").toString()) {
+                base.collection(getString(R.string.coll_path_events)).document(doc[getString(R.string.field_event)].toString()).get().addOnSuccessListener { it2 ->
+                    if(it2[getString(R.string.field_owner)] == sharedPrefs.getString(getString(R.string.field_login), "--").toString()) {
                         buttonsMy.add(Button(layout.context))
                         val params = LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -48,11 +48,10 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
                         )
                         params.topMargin = 80
                         buttonsMy.last().layoutParams = params
-                        buttonsMy.last().text = it2["name"].toString()
+                        buttonsMy.last().text = it2[getString(R.string.field_name)].toString()
                         buttonsMy.last().setBackgroundColor(Color.BLACK)
                         buttonsMy.last().setTextColor(Color.WHITE)
                         buttonsMy.last().setOnClickListener(this)
-                        //layout.addView(buttonsMy.last())
                     }
                     else {
                         buttonsRegs.add(Button(layout.context))
@@ -62,7 +61,7 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
                         )
                         params.topMargin = 80
                         buttonsRegs.last().layoutParams = params
-                        buttonsRegs.last().text = it2["name"].toString()
+                        buttonsRegs.last().text = it2[getString(R.string.field_name)].toString()
                         buttonsRegs.last().setOnClickListener(this)
                     }
                     count++
@@ -78,26 +77,26 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
         var owner = "--"
         val intent = Intent(this, EventActivity::class.java)
         val bundle = Bundle()
-        base.collection("events").whereEqualTo("name", text).get().addOnSuccessListener {
+        base.collection(getString(R.string.coll_path_events)).whereEqualTo(getString(R.string.field_name), text).get().addOnSuccessListener {
             for (doc in it){
-                owner = doc["owner"].toString()
-                bundle.putString("name", text)
-                bundle.putString("owner", owner)
-                val checks = doc["checks"].toString().split(" ") //0-description 1-date 2-time 3-people 4-price 5-phone
-                bundle.putString("checks", doc["checks"].toString())
+                owner = doc[getString(R.string.field_owner)].toString()
+                bundle.putString(getString(R.string.field_name), text)
+                bundle.putString(getString(R.string.field_owner), owner)
+                val checks = doc[getString(R.string.field_checks)].toString().split(" ") //0-description 1-date 2-time 3-people 4-price 5-phone
+                bundle.putString(getString(R.string.field_checks), doc[getString(R.string.field_checks)].toString())
                 if (checks[0] == "1")
-                    bundle.putString("description", doc["description"].toString())
+                    bundle.putString(getString(R.string.field_description), doc[getString(R.string.field_description)].toString())
                 if (checks[1] == "1")
-                    bundle.putString("date", doc["date"].toString())
+                    bundle.putString(getString(R.string.field_date), doc[getString(R.string.field_date)].toString())
                 if (checks[2] == "1")
-                    bundle.putString("time", doc["time"].toString())
+                    bundle.putString(getString(R.string.field_time), doc[getString(R.string.field_time)].toString())
                 if (checks[3] == "1")
-                    bundle.putString("people", doc["people"].toString())
+                    bundle.putString(getString(R.string.field_people), doc[getString(R.string.field_people)].toString())
                 if (checks[4] == "1")
-                    bundle.putString("price", doc["price"].toString())
+                    bundle.putString(getString(R.string.field_price), doc[getString(R.string.price)].toString())
                 if (checks[5] == "1")
-                    bundle.putString("phone", doc["phone"].toString())
-                bundle.putString("id", doc.id)
+                    bundle.putString(getString(R.string.field_phone), doc[getString(R.string.field_phone)].toString())
+                bundle.putString(getString(R.string.field_id), doc.id)
                 intent.putExtras(bundle)
                 startActivity(intent)
             }

@@ -48,21 +48,6 @@ class DataBase/* : FireBaseListener*/{
                     context.onSuccess(null)
                 }
             } .addOnFailureListener{ context.onFailure("Error") }
-        /*val doc: MutableMap<String, Any> = java.util.HashMap()
-            //doc["login"] = user.login
-            /*doc["password"] = user.password.toMD5()
-            doc["first_name"] = user.firstName
-            doc["second_name"] = user.secondName
-            doc["third_name"] = user.thirdName
-            doc["university"] = user.universityId
-            doc["birth_date"] = user.birthDate*/
-            doc["password"] = password.toMD5()
-            doc["first_name"] = firstName
-            doc["second_name"] = secondName
-            doc["third_name"] = thirdName
-            doc["university"] = universityId
-            doc["birth_date"] = birthDate
-            dataBase.collection("users").document(login).set(doc)//.addOnSuccessListener { context.onSuccess(null) }.addOnFailureListener{ context.onFailure() }*/
             return true
         }
 
@@ -87,13 +72,4 @@ class DataBase/* : FireBaseListener*/{
                 }
         }
     }
-/*
-    override fun onSuccess(document: DocumentSnapshot?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onFailure() {
-        TODO("Not yet implemented")
-    }
- */
 }

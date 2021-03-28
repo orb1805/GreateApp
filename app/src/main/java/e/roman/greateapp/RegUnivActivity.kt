@@ -45,7 +45,7 @@ class RegUnivActivity : AppCompatActivity(), FireBaseListener {
         registrationButton = findViewById(R.id.buttonRegistration)
         university = findViewById(R.id.textInputUniversity)
         captcha = findViewById(R.id.textInputCaptcha)
-        sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
         webView = findViewById(R.id.webView)
         page = StudentPage("https://www.mos.ru/karta-moskvicha/services-proverka-grazhdanina-v-reestre-studentov/", webView)
         page.loadPage()
@@ -60,15 +60,15 @@ class RegUnivActivity : AppCompatActivity(), FireBaseListener {
     }
 
     private fun addUser(){
-        firstNameStr = sharedPrefs.getString("first_name", "").toString()
-        secondNameStr = sharedPrefs.getString("second_name", "").toString()
-        thirdNameStr = sharedPrefs.getString("third_name", "").toString()
+        firstNameStr = sharedPrefs.getString(getString(R.string.field_first_name), "--").toString()
+        secondNameStr = sharedPrefs.getString(getString(R.string.field_second_name), "--").toString()
+        thirdNameStr = sharedPrefs.getString(getString(R.string.field_third_name), "--").toString()
         universityStr = university.text.toString()
-        birthDateStr = sharedPrefs.getString("birth_date", "").toString()
+        birthDateStr = sharedPrefs.getString(getString(R.string.field_birth_date), "--").toString()
         val captcha = captcha.text.toString()
-        val gender = sharedPrefs.getInt("gender", -1)
-        loginStr = sharedPrefs.getString("login", "").toString()
-        passwordStr = sharedPrefs.getString("password", "").toString()
+        val gender = sharedPrefs.getInt(getString(R.string.fielde_gender), -1)
+        loginStr = sharedPrefs.getString(getString(R.string.field_login), "--").toString()
+        passwordStr = sharedPrefs.getString(getString(R.string.field_password), "--").toString()
 
         val universityCallback = object : DataBase.UniversityCallback{
             override fun onCallback(universityId: String) {
@@ -126,18 +126,18 @@ class RegUnivActivity : AppCompatActivity(), FireBaseListener {
     }
 
     override fun onSuccess(document: DocumentSnapshot?) {
-        sharedPrefs.edit().putBoolean("signed", true).apply()
-        dataBase.collection("universities").document(univId).get().addOnSuccessListener { document ->
+        sharedPrefs.edit().putBoolean(getString(R.string.field_signed), true).apply()
+        dataBase.collection(getString(R.string.coll_path_universities)).document(univId).get().addOnSuccessListener { document ->
             if(document != null)
-                sharedPrefs.edit().putString("university", document!!["name"].toString()).apply()
+                sharedPrefs.edit().putString(getString(R.string.field_university), document!![getString(R.string.field_name)].toString()).apply()
         }
-        sharedPrefs.edit().putString("birth_date", birthDateStr).apply()
-        sharedPrefs.edit().remove("password").apply()
+        sharedPrefs.edit().putString(getString(R.string.field_birth_date), birthDateStr).apply()
+        sharedPrefs.edit().remove(getString(R.string.field_password)).apply()
         startActivity(Intent(this, MainScreenActivity::class.java))
     }
 
     override fun onFailure(msg : String?) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-        sharedPrefs.edit().putBoolean("signed", false).apply()
+        sharedPrefs.edit().putBoolean(getString(R.string.field_signed), false).apply()
     }
 }

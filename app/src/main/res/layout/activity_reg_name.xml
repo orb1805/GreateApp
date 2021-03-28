@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="@string/secondName" />
+            android:hint="@string/second_name" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -35,7 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="@string/firstName" />
+            android:hint="@string/first_name" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="@string/thirdName" />
+            android:hint="@string/third_name" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -64,7 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:hint="@string/birthDate"
+            android:hint="@string/birth_date"
             android:inputType="date" />
     </com.google.android.material.textfield.TextInputLayout>
 

@@ -42,7 +42,7 @@ class RegNameActivity : AppCompatActivity() {
         isWoman = findViewById(R.id.radioButtonW)
         nextBtn = findViewById(R.id.next_btn)
         birthDate = findViewById(R.id.textInputBirthDate)
-        sharedPrefs = getSharedPreferences("file", Context.MODE_PRIVATE)
+        sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
     }
 
     override fun onResume() {
@@ -62,11 +62,11 @@ class RegNameActivity : AppCompatActivity() {
         }
         nextBtn.setOnClickListener {
             if (firstName.text.toString().isNotEmpty() && secondName.text.toString().isNotEmpty() && thirdName.text.toString().isNotEmpty() && birthDate.text.toString().isNotEmpty()) {
-                sharedPrefs.edit().putString("first_name", firstName.text.toString()).apply()
-                sharedPrefs.edit().putString("second_name", secondName.text.toString()).apply()
-                sharedPrefs.edit().putString("third_name", thirdName.text.toString()).apply()
-                sharedPrefs.edit().putInt("gender", if(isMan.isChecked) 1 else if(isWoman.isChecked) 0 else -1).apply()
-                sharedPrefs.edit().putString("birth_date",  birthDate.text.toString()).apply()
+                sharedPrefs.edit().putString(getString(R.string.field_first_name), firstName.text.toString()).apply()
+                sharedPrefs.edit().putString(getString(R.string.field_second_name), secondName.text.toString()).apply()
+                sharedPrefs.edit().putString(getString(R.string.field_third_name), thirdName.text.toString()).apply()
+                sharedPrefs.edit().putInt(getString(R.string.fielde_gender), if(isMan.isChecked) 1 else if(isWoman.isChecked) 0 else -1).apply()
+                sharedPrefs.edit().putString(getString(R.string.field_birth_date),  birthDate.text.toString()).apply()
                 startActivity(Intent(this, RegLogActivity::class.java))
             }
             else
