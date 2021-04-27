@@ -20,4 +20,8 @@ class SPController(private val sharedPreferences: SharedPreferences) {
         return sharedPreferences.getString(name, defaulValue).toString()
     }
 
+    fun get(name: String, defaulValue: Boolean): Boolean {
+        return sharedPreferences.getBoolean(name, defaulValue)
+    }
+
 }
