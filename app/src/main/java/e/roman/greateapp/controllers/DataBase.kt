@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import e.roman.greateapp.R
 import e.roman.greateapp.toMD5
 import java.io.Serializable
 
@@ -32,7 +33,16 @@ class DataBase : Serializable{
         }
 
         //fun addUser(user: User): Boolean {
-        fun addUser(login : String, password : String, firstName : String, secondName : String, thirdName : String, universityId : String, birthDate : String, context: FireBaseListener) : Boolean{
+        fun addUser(
+            login: String,
+            password: String,
+            firstName: String,
+            secondName: String,
+            thirdName: String,
+            universityId: String,
+            birthDate: String,
+            context: FireBaseListener
+        ): Boolean {
             dataBase.collection("users").document(login).get().addOnSuccessListener { document ->
                 if (document.exists()) {
                     Log.d("Check", "Success not null")
@@ -50,7 +60,7 @@ class DataBase : Serializable{
                     dataBase.collection("users").document(login).set(doc)
                     context.onSuccess(null)
                 }
-            } .addOnFailureListener{ context.onFailure("Error") }
+            }.addOnFailureListener { context.onFailure("Error") }
             return true
         }
 
@@ -75,7 +85,12 @@ class DataBase : Serializable{
                 }
         }
 
-        fun getFromCollection(collectionPath: String, documentId: String, onSuccess: (document: DocumentSnapshot) -> Unit, onFailure: () -> Unit) {
+        fun getFromCollection(
+            collectionPath: String,
+            documentId: String,
+            onSuccess: (document: DocumentSnapshot) -> Unit,
+            onFailure: () -> Unit
+        ) {
             dataBase.collection(collectionPath).document(documentId).get()
                 .addOnSuccessListener { document ->
                     if (document != null) {
@@ -85,10 +100,48 @@ class DataBase : Serializable{
                 }.addOnFailureListener { onFailure() }
         }
 
-        fun getWholeCollection(collectionPath: String, onSuccess: (document: QuerySnapshot) -> Unit, onFailure: () -> Unit) {
+        fun getWholeCollection(
+            collectionPath: String,
+            onSuccess: (document: QuerySnapshot) -> Unit,
+            onFailure: () -> Unit
+        ) {
             dataBase.collection(collectionPath).get().addOnSuccessListener {
                 onSuccess(it)
             }
+        }
+
+        fun getDocumentWithEqual(
+            collectionPath: String,
+            equalField: String,
+            equalValue: String,
+            onSuccess: (document: QuerySnapshot) -> Unit,
+            onFailure: () -> Unit
+        ) {
+            dataBase.collection(collectionPath).whereEqualTo(equalField, equalValue).get()
+                .addOnSuccessListener { onSuccess(it) }
+        }
+
+        fun addDocumnet(collectionPath: String, document: MutableMap<String, Any?>) {
+            dataBase.collection(collectionPath).add(document)
+        }
+
+        fun updateDocument(
+            collectionPath: String,
+            documentId: String,
+            field: String,
+            value: MutableList<String>
+        ) {
+            dataBase.collection(collectionPath).document(documentId).update(
+                field, value
+            )
+        }
+
+        fun setDocument(
+            collectionPath: String,
+            documentId: String,
+            value: MutableMap<String, Any?>
+        ) {
+            dataBase.collection(collectionPath).document(documentId).set(value)
         }
     }
 }

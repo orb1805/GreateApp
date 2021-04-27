@@ -4,31 +4,44 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.util.Log
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 import e.roman.greateapp.R
+import e.roman.greateapp.controllers.DataBase
+import e.roman.greateapp.controllers.SPController
 import java.util.HashMap
+import kotlin.math.log
 
 class EventActivity : AppCompatActivity() {
 
     private lateinit var layout: LinearLayout
     private lateinit var functionalBtn: Button
-    private lateinit var base: FirebaseFirestore
-    private lateinit var sharedPrefs : SharedPreferences
+    private lateinit var spController: SPController
     private lateinit var login: String
+    private var notOwner = true
+    private lateinit var users: MutableList<String>
+    private lateinit var doc: QueryDocumentSnapshot
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event)
 
-        this.sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
-        login = sharedPrefs.getString(getString(R.string.field_login), "--").toString()
-        var notOwner = true
-        base = FirebaseFirestore.getInstance()
+        this.spController = SPController(
+            getSharedPreferences(
+                getString(R.string.shared_prefs_name),
+                Context.MODE_PRIVATE
+            )
+        )
+        login = spController.get(getString(R.string.field_login), "--")
         layout = findViewById(R.id.layout_event)
         addTV(R.string.name, getString(R.string.field_name))
         addTV(R.string.owner, getString(R.string.field_owner))
@@ -57,34 +70,94 @@ class EventActivity : AppCompatActivity() {
             notOwner = false
         }
         layout.addView(functionalBtn)
+        DataBase.getDocumentWithEqual(getString(R.string.coll_path_registers), getString(R.string.field_event), intent.getStringExtra(getString(R.string.field_id)), ::showRegistered, ::onFailure)
+    }
+
+    private fun showRegistered(documents: QuerySnapshot) {
         val textView = TextView(this)
-        base.collection(getString(R.string.coll_path_registers)).whereEqualTo(getString(R.string.field_event), intent.getStringExtra(getString(
-            R.string.field_id
-        ))?.toString()).get().addOnSuccessListener {
-            if (it.isEmpty) {
-                textView.text = "ЗАРЕГЕСТРИРОВАНЫ: пустенько немножко"
-            }
-            else{
-                for (doc in it) {
-                    //textView.text = "ЗАРЕГЕСТРИРОВАНЫ: ${doc.get(getString(R.string.field_users)).toString()}"
-                        textView.text = getString(R.string.registered_list, doc.get(getString(R.string.field_users)).toString())
-                    if (notOwner) {
-                        if (login in (doc.get(getString(R.string.field_users)) as List<*>)) {
-                            Log.d("check", "set unreg click")
-                            functionalBtn.text = getString(R.string.un_registr)
-                            functionalBtn.setOnClickListener { unRegisterBtnClickListener() }
-                        }
-                        else{
-                            Log.d("check", "set reg click")
-                            functionalBtn.text = getString(R.string.registr)
-                            functionalBtn.setOnClickListener { registerBtnClickListener() }
-                        }
+        if (documents.isEmpty) {
+            textView.text = "ЗАРЕГЕСТРИРОВАНЫ: пустенько немножко"
+        }
+        else{
+            for (doc in documents) {
+                textView.text = getString(R.string.registered_list, doc.get(getString(R.string.field_users)).toString())
+                if (notOwner) {
+                    if (login in (doc.get(getString(R.string.field_users)) as List<*>)) {
+                        Log.d("check", "set unreg click")
+                        functionalBtn.text = getString(R.string.un_registr)
+                        functionalBtn.setOnClickListener { unRegisterBtnClickListener() }
+                    }
+                    else{
+                        Log.d("check", "set reg click")
+                        functionalBtn.text = getString(R.string.registr)
+                        functionalBtn.setOnClickListener { registerBtnClickListener() }
                     }
                 }
             }
         }
         textView.textSize = resources.getDimension(R.dimen.text_size)
         layout.addView(textView)
+    }
+
+    private fun addRegisteredUser(documents: QuerySnapshot) {
+        if (documents.isEmpty) {
+            val document: MutableMap<String, Any?> = HashMap()
+            document[getString(R.string.field_event)] =
+                intent.getStringExtra(getString(R.string.field_id))?.toString()
+            document[getString(R.string.field_users)] =
+                listOf(spController.get(getString(R.string.field_login), "--"))
+            DataBase.addDocumnet(getString(R.string.coll_path_registers), document)
+        } else {
+            for (doc in documents) {
+                this.doc = doc
+                users = doc.get(getString(R.string.field_users)) as MutableList<String>
+                val login = spController.get(getString(R.string.field_id), "--")
+                var flag = true
+                for (i in users) {
+                    if (i == login)
+                        flag = false
+                }
+                if (flag)
+                    DataBase.getFromCollection(getString(R.string.field_users), login, ::addFriend, ::onFailure)
+            }
+        }
+    }
+
+    private fun addFriend(document: DocumentSnapshot) {
+        val friends = document[getString(R.string.field_friends)] as MutableList<String>
+        for (i in users)
+            if (i !in friends) {
+                friends.add(i)
+                DataBase.getFromCollection(getString(R.string.field_users), i, ::addUserAsFriend, ::onFailure)
+            }
+        DataBase.updateDocument(getString(R.string.field_users), login, getString(R.string.field_friends), friends)
+        users.add(spController.get(getString(R.string.field_login), "--"))
+        val document: MutableMap<String, Any?> = HashMap()
+        document[getString(R.string.field_event)] = intent.getStringExtra(
+            getString(
+                R.string.field_id
+            )
+        )?.toString()
+        document[getString(R.string.field_users)] = users
+        DataBase.setDocument(getString(R.string.coll_path_registers), doc.id, document)
+    }
+
+    private fun addUserAsFriend(document: DocumentSnapshot) {
+        val friends1 =
+            document[getString(R.string.field_friends)] as MutableList<String>
+        friends1.add(login)
+        DataBase.updateDocument(getString(R.string.field_users), document["id"].toString(), getString(R.string.field_friends), friends1)
+    }
+
+    private fun removeFromFriends(documents: QuerySnapshot) {
+        for (doc in documents) {
+            val users = doc.get(getString(R.string.field_users)) as MutableList<String>
+            Log.d("check", "$users - $login")
+            users.remove(login)
+            Log.d("check", "$users - $login")
+            Log.d("check", doc.id)
+            DataBase.updateDocument(getString(R.string.coll_path_registers), doc.id, getString(R.string.field_users), users)
+        }
     }
 
     private fun addTV(source: Int, stringName: String){
@@ -95,80 +168,27 @@ class EventActivity : AppCompatActivity() {
         layout.addView(textView)
     }
 
-    private fun registerBtnClickListener(){
-        Log.d("check", "Register click")
-        base.collection(getString(R.string.coll_path_registers)).whereEqualTo(getString(R.string.field_event), intent.getStringExtra(getString(
-            R.string.field_id
-        ))?.toString()).get().addOnSuccessListener { it ->
-            if (it.isEmpty) {
-                val document: MutableMap<String, Any?> = HashMap()
-                document[getString(R.string.field_event)] = intent.getStringExtra(getString(R.string.field_id))?.toString()
-                document[getString(R.string.field_users)] = listOf(sharedPrefs.getString(getString(R.string.field_login), "--").toString())
-                base.collection(getString(R.string.coll_path_registers)).add(document)
-            }
-            else {
-                for (doc in it) {
-                    val users = doc.get(getString(R.string.field_users)) as MutableList<String>
-                    val login = sharedPrefs.getString(getString(R.string.field_id), "--").toString()
-                    var flag = true
-                    for (i in users) {
-                        if (i == login)
-                            flag = false
-                    }
-                    if (flag)
-                        base.collection(getString(R.string.field_users)).document(login).get().addOnSuccessListener { it1 ->
-                            val friends = it1[getString(R.string.field_friends)] as MutableList<String>
-                            for (i in users)
-                                if (i !in friends) {
-                                    friends.add(i)
-                                    base.collection(getString(R.string.field_users)).document(i).get().addOnSuccessListener {
-                                        val friends1 = it[getString(R.string.field_friends)] as MutableList<String>
-                                        friends1.add(login)
-                                        base.collection(getString(R.string.field_users)).document(i).update(getString(
-                                            R.string.field_friends
-                                        ), friends1)
-                                    }
-                                }
-                            base.collection(getString(R.string.field_users)).document(login).update(getString(
-                                R.string.field_friends
-                            ), friends)
-                            users.add(sharedPrefs.getString(getString(R.string.field_login), "--").toString())
-                            val document: MutableMap<String, Any?> = HashMap()
-                            document[getString(R.string.field_event)] = intent.getStringExtra(getString(
-                                R.string.field_id
-                            ))?.toString()
-                            document[getString(R.string.field_users)] = users
-                            base.collection(getString(R.string.coll_path_registers)).document(doc.id).set(document)
-                        }
-                }
-            }
-        }
+    private fun registerBtnClickListener() {
+        DataBase.getDocumentWithEqual(
+            getString(R.string.coll_path_registers),
+            getString(R.string.field_event),
+            intent.getStringExtra(getString(R.string.field_id)).toString(),
+            ::addRegisteredUser,
+            ::onFailure
+        )
     }
 
-    private fun unRegisterBtnClickListener(){
-        base.collection(getString(R.string.coll_path_registers)).whereEqualTo(getString(R.string.field_event), intent.getStringExtra(getString(
-            R.string.field_id
-        ))?.toString()).get().addOnSuccessListener {
-            for (doc in it) {
-                val users = doc.get(getString(R.string.field_users)) as MutableList<String>
-                Log.d("check", "$users - $login")
-                users.remove(login)
-                Log.d("check", "$users - $login")
-                Log.d("check", doc.id)
-                base.collection(getString(R.string.coll_path_registers)).document(doc.id).update(getString(
-                    R.string.field_users
-                ), users).addOnSuccessListener { Log.d("check", "success deletion") }
-            }
-        }
+    private fun unRegisterBtnClickListener() {
+        DataBase.getDocumentWithEqual(getString(R.string.coll_path_registers), getString(R.string.field_event), intent.getStringExtra(getString(R.string.field_id)).toString(), ::removeFromFriends, ::onFailure)
     }
 
     private fun editBtnClickListener(){
-        /*val sp = getSharedPreferences(getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE)
-        sp.edit().putBoolean(getString(R.string.field_edit), true).apply()
-        sp.edit().putString(getString(R.string.field_checks), intent.getStringExtra(getString(R.string.field_checks))?.toString()).apply()*/
         val intent = Intent(this, EventCreatorActivity::class.java)
-        //intent.putExtra(getString(R.string.field_checks), che)
         startActivity(intent)
+    }
+
+    private fun onFailure() {
+        Toast.makeText(this, "Ошибка", Toast.LENGTH_SHORT).show()
     }
 
 }

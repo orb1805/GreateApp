@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import e.roman.greateapp.R
 import e.roman.greateapp.controllers.DataBase
+import e.roman.greateapp.controllers.SPController
 import e.roman.greateapp.controllers.User
 import e.roman.greateapp.toMD5
 
@@ -23,8 +24,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var btnLogin: Button
     private lateinit var login: EditText
     private lateinit var password: EditText
-    private lateinit var sharedPrefs: SharedPreferences
-    private lateinit var db: FirebaseFirestore
+    private lateinit var spController: SPController
     private lateinit var person: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +35,12 @@ class LoginActivity : AppCompatActivity() {
         this.btnLogin = findViewById(R.id.btn_login)
         this.login = findViewById(R.id.login)
         this.password = findViewById(R.id.password)
-        this.sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
-        this.db = FirebaseFirestore.getInstance()
+        this.spController = SPController(
+            getSharedPreferences(
+                getString(R.string.shared_prefs_name),
+                Context.MODE_PRIVATE
+            )
+        )
     }
 
     override fun onResume() {
@@ -77,9 +81,11 @@ class LoginActivity : AppCompatActivity() {
                     document[getString(R.string.field_birth_date)].toString(),
                     "--"
                 )
-                DataBase.getFromCollection(getString(R.string.coll_path_universities), document!![getString(
-                    R.string.field_university
-                )].toString(), ::savePerson, ::onFailure)
+                DataBase.getFromCollection(
+                    getString(R.string.coll_path_universities), document!![getString(
+                        R.string.field_university
+                    )].toString(), ::savePerson, ::onFailure
+                )
             } else {
                 this.onFailure()
             }
@@ -89,31 +95,21 @@ class LoginActivity : AppCompatActivity() {
     private fun savePerson(doc: DocumentSnapshot?) {
         Log.d("check22", "onSuccess start")
         if (doc != null) {
-            sharedPrefs.edit().putString(
+            spController.put(
                 getString(R.string.field_university),
                 doc!![getString(R.string.field_name)].toString()
-            ).apply()
-            Log.d("check22", doc!![getString(R.string.field_name)].toString())
-            sharedPrefs.edit().putBoolean(getString(R.string.field_signed), true).apply()
-            sharedPrefs.edit()
-                .putString(getString(R.string.field_login), this.login.text.toString()).apply()
-            sharedPrefs.edit().putString(
-                getString(R.string.field_first_name),
-                person.name
-            ).apply()
-            sharedPrefs.edit().putString(
-                getString(R.string.field_second_name),
-                person.surname
-            ).apply()
-            sharedPrefs.edit().putString(
-                getString(R.string.field_third_name),
-                person.thirdName
-            ).apply()
-            sharedPrefs.edit().putString(
-                getString(R.string.field_birth_date),
-                person.birthDate
-            ).apply()
-            DataBase.getWholeCollection(getString(R.string.coll_path_events), ::startMainActivity, ::onFailure)
+            )
+            spController.put(getString(R.string.field_signed), true)
+            spController.put(getString(R.string.field_login), this.login.text.toString())
+            spController.put(getString(R.string.field_first_name), person.name)
+            spController.put(getString(R.string.field_second_name), person.surname)
+            spController.put(getString(R.string.field_third_name), person.thirdName)
+            spController.put(getString(R.string.field_birth_date), person.birthDate)
+            DataBase.getWholeCollection(
+                getString(R.string.coll_path_events),
+                ::startMainActivity,
+                ::onFailure
+            )
         }
     }
 
@@ -133,7 +129,7 @@ class LoginActivity : AppCompatActivity() {
     private fun onFailure() {
         Log.d("check22", "onFailure start")
         Toast.makeText(this, "Ошибка", Toast.LENGTH_SHORT).show()
-        sharedPrefs.edit().putBoolean(getString(R.string.field_signed), false).apply()
+        spController.put(getString(R.string.field_signed), false)
     }
 
     override fun finish() {
