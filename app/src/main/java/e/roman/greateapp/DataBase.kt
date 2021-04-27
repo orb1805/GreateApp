@@ -1,14 +1,18 @@
 package e.roman.greateapp
 
+import android.os.Bundle
 import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
+import java.io.Serializable
 
-class DataBase/* : FireBaseListener*/{
+class DataBase : Serializable{
+
     interface UniversityCallback {
         fun onCallback(universityId: String)
     }
-
 
     companion object {
         val dataBase = FirebaseFirestore.getInstance()
@@ -53,7 +57,7 @@ class DataBase/* : FireBaseListener*/{
 
 
         fun checkUniversity(s: String, callback: UniversityCallback) {
-           val regex = s.toRegex()
+            val regex = s.toRegex()
             universityId = "no"
             Log.d("MyLogCheckUniversity", "in")
             val res = dataBase.collection("universities")
@@ -70,6 +74,22 @@ class DataBase/* : FireBaseListener*/{
                     }
                     callback.onCallback(universityId)
                 }
+        }
+
+        fun getFromCollection(collectionPath: String, documentId: String, onSuccess: (document: DocumentSnapshot) -> Unit, onFailure: () -> Unit) {
+            dataBase.collection(collectionPath).document(documentId).get()
+                .addOnSuccessListener { document ->
+                    if (document != null) {
+                        onSuccess(document)
+                    }
+
+                }.addOnFailureListener { onFailure() }
+        }
+
+        fun getWholeCollection(collectionPath: String, onSuccess: (document: QuerySnapshot) -> Unit, onFailure: () -> Unit) {
+            dataBase.collection(collectionPath).get().addOnSuccessListener {
+                onSuccess(it)
+            }
         }
     }
 }

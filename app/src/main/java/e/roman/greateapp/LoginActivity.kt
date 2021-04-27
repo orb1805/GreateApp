@@ -11,15 +11,17 @@ import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 
-class LoginActivity : AppCompatActivity(), FireBaseListener{
+class LoginActivity : AppCompatActivity() {
 
-    private lateinit var btnReg : Button
-    private lateinit var btnLogin : Button
-    private lateinit var login : EditText
-    private lateinit var password : EditText
-    private lateinit var sharedPrefs : SharedPreferences
-    private lateinit var db : FirebaseFirestore
+    private lateinit var btnReg: Button
+    private lateinit var btnLogin: Button
+    private lateinit var login: EditText
+    private lateinit var password: EditText
+    private lateinit var sharedPrefs: SharedPreferences
+    private lateinit var db: FirebaseFirestore
+    private lateinit var person: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,89 +43,95 @@ class LoginActivity : AppCompatActivity(), FireBaseListener{
             startActivity(intent)
         }
 
-        btnLogin.setOnClickListener{ checkLogin() }
+        btnLogin.setOnClickListener { checkLogin() }
     }
 
-    private fun checkLogin(){
+    private fun checkLogin() {
         val login = this.login.text.toString()
         val password = this.password.text.toString().toMD5()
         if (login.isNotEmpty() && password.isNotEmpty()) {
-            db.collection(getString(R.string.field_users)).document(login).get().addOnSuccessListener { document ->
-                if (document != null) {
-                    if (document.data?.get(getString(R.string.field_password))?.toString()  == password) {
-                        this.onSuccess(document)
-                    } else {
-                        this.onFailure("Пароли не совпадают")
-                    }
-                }
-
-            }.addOnFailureListener { this.onFailure("Ошибка") }
+            DataBase.getFromCollection(
+                getString(R.string.field_users),
+                login,
+                ::checkPassword,
+                ::onFailure
+            )
         }
         Log.d("check22", "func finished")
     }
 
-    override fun finish() {
-        //чтобы нельзя было выйти из активити через встроенную кнопку "назад"
-    }
-
-    override fun onSuccess(document: DocumentSnapshot?) {
-        Log.d("check22", "onSuccess start")
-        //val intent = Intent(this, MainScreenActivity::class.java)
-        db.collection(getString(R.string.coll_path_universities)).document(document!![getString(R.string.field_university)].toString()).get().addOnSuccessListener { doc ->
-            if (doc != null) {
-                sharedPrefs.edit().putString(
-                    getString(R.string.field_university),
-                    doc!![getString(R.string.field_name)].toString()
-                ).apply()
-                Log.d("check22",  doc!![getString(R.string.field_name)].toString())
-                sharedPrefs.edit().putBoolean(getString(R.string.field_signed), true).apply()
-                sharedPrefs.edit()
-                    .putString(getString(R.string.field_login), this.login.text.toString()).apply()
-                sharedPrefs.edit().putString(
-                    getString(R.string.first_name),
-                    document!![getString(R.string.field_first_name)].toString()
-                ).apply()
-                sharedPrefs.edit().putString(
-                    getString(R.string.field_second_name),
-                    document[getString(R.string.field_second_name)].toString()
-                ).apply()
-                sharedPrefs.edit().putString(
-                    getString(R.string.field_third_name),
-                    document[getString(R.string.field_third_name)].toString()
-                ).apply()
-                sharedPrefs.edit().putString(
-                    getString(R.string.field_birth_date),
-                    document[getString(R.string.field_birth_date)].toString()
-                ).apply()
-                intent = Intent(this, MainScreenActivity::class.java)
-                var names = ""
-                val login = this.login.text.toString()
-                db.collection(getString(R.string.coll_path_events)).get().addOnSuccessListener {
-                    for (doc in it)
-                        if (doc[getString(R.string.field_owner)].toString() != login)
-                            names += "/" + doc[getString(R.string.field_name)]!!.toString()
-                    val bundle = Bundle()
-                    bundle.putString("names", names)
-                    intent.putExtras(bundle)
-                    startActivity(intent)
-                }
-                //startActivity(Intent(this, MainScreenActivity::class.java))
-                //Log.d("check22", "start activity")
+    private fun checkPassword(document: DocumentSnapshot?) {
+        if (document != null) {
+            if (document.data?.get(getString(R.string.field_password))
+                    ?.toString() == this.password.text.toString().toMD5()
+            ) {
+                person = User(
+                    this.login.text.toString(),
+                    document!![getString(R.string.field_first_name)].toString(),
+                    document[getString(R.string.field_second_name)].toString(),
+                    document[getString(R.string.field_third_name)].toString(),
+                    document[getString(R.string.field_birth_date)].toString(),
+                    "--"
+                )
+                DataBase.getFromCollection(getString(R.string.coll_path_universities), document!![getString(R.string.field_university)].toString(), ::savePerson, ::onFailure)
+            } else {
+                this.onFailure()
             }
         }
-        /*sharedPrefs.edit().putBoolean(getString(R.string.field_signed), true).apply()
-        sharedPrefs.edit().putString(getString(R.string.field_login), this.login.text.toString()).apply()
-        sharedPrefs.edit().putString(getString(R.string.first_name), document!![getString(R.string.field_first_name)].toString()).apply()
-        sharedPrefs.edit().putString(getString(R.string.field_second_name), document[getString(R.string.field_second_name)].toString()).apply()
-        sharedPrefs.edit().putString(getString(R.string.field_third_name), document[getString(R.string.field_third_name)].toString()).apply()
-        sharedPrefs.edit().putString(getString(R.string.field_birth_date), document[getString(R.string.field_birth_date)].toString()).apply()
-        startActivity(intent)*/
     }
 
-    override fun onFailure(msg : String?) {
+    private fun savePerson(doc: DocumentSnapshot?) {
+        Log.d("check22", "onSuccess start")
+        if (doc != null) {
+            sharedPrefs.edit().putString(
+                getString(R.string.field_university),
+                doc!![getString(R.string.field_name)].toString()
+            ).apply()
+            Log.d("check22", doc!![getString(R.string.field_name)].toString())
+            sharedPrefs.edit().putBoolean(getString(R.string.field_signed), true).apply()
+            sharedPrefs.edit()
+                .putString(getString(R.string.field_login), this.login.text.toString()).apply()
+            sharedPrefs.edit().putString(
+                getString(R.string.field_first_name),
+                person.name
+            ).apply()
+            sharedPrefs.edit().putString(
+                getString(R.string.field_second_name),
+                person.surname
+            ).apply()
+            sharedPrefs.edit().putString(
+                getString(R.string.field_third_name),
+                person.thirdName
+            ).apply()
+            sharedPrefs.edit().putString(
+                getString(R.string.field_birth_date),
+                person.birthDate
+            ).apply()
+            DataBase.getWholeCollection(getString(R.string.coll_path_events), ::startMainActivity, ::onFailure)
+        }
+    }
+
+    private fun startMainActivity(documents: QuerySnapshot) {
+        intent = Intent(this, MainScreenActivity::class.java)
+        var names = ""
+        val login = this.login.text.toString()
+        for (doc in documents)
+            if (doc[getString(R.string.field_owner)].toString() != login)
+                names += "/" + doc[getString(R.string.field_name)]!!.toString()
+        val bundle = Bundle()
+        bundle.putString("names", names)
+        intent.putExtras(bundle)
+        startActivity(intent)
+    }
+
+    private fun onFailure() {
         Log.d("check22", "onFailure start")
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Ошибка", Toast.LENGTH_SHORT).show()
         sharedPrefs.edit().putBoolean(getString(R.string.field_signed), false).apply()
+    }
+
+    override fun finish() {
+        //чтобы нельзя было выйти из активити через встроенную кнопку "назад"
     }
 
 }

@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import com.google.firebase.firestore.FirebaseFirestore
+import java.io.Serializable
 
 class MainScreenActivity : AppCompatActivity(), View.OnClickListener{
 
@@ -26,7 +27,7 @@ class MainScreenActivity : AppCompatActivity(), View.OnClickListener{
         btnPerson = findViewById(R.id.btn_person)
         btnMyEvents = findViewById(R.id.btn_my_events)
         layout = findViewById(R.id.layout)
-        base = FirebaseFirestore.getInstance()
+        base = DataBase.dataBase//FirebaseFirestore.getInstance()
         buttons = mutableListOf()
         namesStr = intent.getStringExtra(getString(R.string.field_names))
         if (namesStr != "") {
@@ -82,7 +83,7 @@ class MainScreenActivity : AppCompatActivity(), View.OnClickListener{
         val bundle = Bundle()
         base.collection(getString(R.string.coll_path_events)).whereEqualTo(getString(R.string.field_name), text).get().addOnSuccessListener {
             for (doc in it){
-                owner = doc[getString(R.string.owner)].toString()
+                owner = doc[getString(R.string.field_owner)].toString()
                 bundle.putString(getString(R.string.field_name), text)
                 bundle.putString(getString(R.string.field_owner), owner)
                 bundle.putString(getString(R.string.coll_path_universities), doc[getString(R.string.coll_path_universities)].toString())

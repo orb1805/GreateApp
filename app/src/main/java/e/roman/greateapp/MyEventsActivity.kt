@@ -20,18 +20,23 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var buttonsRegs: MutableList<Button>
     private lateinit var buttonsMy: MutableList<Button>
+    private lateinit var sp: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_events)
 
+        sp = getSharedPreferences(getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE)
+        sp.edit().putString(getString(R.string.field_checks), "0 0 0 0 0 0").apply() //0-description 1-date 2-time 3-people 4-price 5-phone
         buttonsRegs = mutableListOf()
         buttonsMy = mutableListOf()
         base = FirebaseFirestore.getInstance()
         sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
         layout = findViewById(R.id.layout_my_events)
         btnAdd = findViewById(R.id.btn_add)
+        val sp = getSharedPreferences(getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE)
         btnAdd.setOnClickListener {
+            sp.edit().putBoolean(getString(R.string.field_edit), false).apply()
             val intent = Intent(this, EventCreatorActivity::class.java)
             startActivity(intent)
         }

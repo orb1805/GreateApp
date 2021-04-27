@@ -1,6 +1,7 @@
 package e.roman.greateapp
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -140,14 +141,19 @@ class EventActivity : AppCompatActivity() {
                 Log.d("check", "$users - $login")
                 users.remove(login)
                 Log.d("check", "$users - $login")
-                Log.d("check", "${doc.id}")
+                Log.d("check", doc.id)
                 base.collection(getString(R.string.coll_path_registers)).document(doc.id).update(getString(R.string.field_users), users).addOnSuccessListener { Log.d("check", "success deletion") }
             }
         }
     }
 
     private fun editBtnClickListener(){
-
+        /*val sp = getSharedPreferences(getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE)
+        sp.edit().putBoolean(getString(R.string.field_edit), true).apply()
+        sp.edit().putString(getString(R.string.field_checks), intent.getStringExtra(getString(R.string.field_checks))?.toString()).apply()*/
+        val intent = Intent(this, EventCreatorActivity::class.java)
+        //intent.putExtra(getString(R.string.field_checks), che)
+        startActivity(intent)
     }
 
 }

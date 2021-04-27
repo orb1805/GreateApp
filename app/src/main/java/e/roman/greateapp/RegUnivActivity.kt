@@ -66,7 +66,7 @@ class RegUnivActivity : AppCompatActivity(), FireBaseListener {
         universityStr = university.text.toString()
         birthDateStr = sharedPrefs.getString(getString(R.string.field_birth_date), "--").toString()
         val captcha = captcha.text.toString()
-        val gender = sharedPrefs.getInt(getString(R.string.fielde_gender), -1)
+        val gender = sharedPrefs.getInt(getString(R.string.field_gender), -1)
         loginStr = sharedPrefs.getString(getString(R.string.field_login), "--").toString()
         passwordStr = sharedPrefs.getString(getString(R.string.field_password), "--").toString()
 

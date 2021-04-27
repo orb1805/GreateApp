@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
@@ -35,7 +36,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_creator)
 
-        sp = getSharedPreferences( getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE)
+        sp = getSharedPreferences(getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE)
         layout = findViewById(R.id.layout)
         btnAdd = Button(this)
         extraButton = Button(this)
@@ -51,17 +52,17 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
         base = FirebaseFirestore.getInstance()
         sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
         checked = mutableMapOf()
-        checked[getString(R.string.field_description)] = false
-        checked[getString(R.string.field_date)] = false
-        checked[getString(R.string.field_time)] = false
-        checked[getString(R.string.field_people)] = false
-        checked[getString(R.string.field_price)] = false
-        checked[getString(R.string.field_phone)] = false
-        sp.edit().putString(getString(R.string.field_checks), "0 0 0 0 0 0").apply() //0-description 1-date 2-time 3-people 4-price 5-phone
-    }
-
-    override fun onResume() {
-        super.onResume()
+        if (sp.getBoolean(getString(R.string.field_edit), false)) {
+            updateLayout()
+        } else {
+            checked[getString(R.string.field_description)] = false
+            checked[getString(R.string.field_date)] = false
+            checked[getString(R.string.field_time)] = false
+            checked[getString(R.string.field_people)] = false
+            checked[getString(R.string.field_price)] = false
+            checked[getString(R.string.field_phone)] = false
+            //sp.edit().putString(getString(R.string.field_checks), "0 0 0 0 0 0").apply() //0-description 1-date 2-time 3-people 4-price 5-phone
+        }
 
         btnAdd.setOnClickListener {
             val name = etName.text.toString()
@@ -76,7 +77,6 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                 }
                 if (checked[getString(R.string.field_date)]!!) {
                     doc[getString(R.string.field_date)] = etdate.text.toString()
-                    //doc["date"] = cvDate.date
                 }
                 if (checked[getString(R.string.field_time)]!!) {
                     doc[getString(R.string.field_time)] = ettime.text.toString()
@@ -108,9 +108,24 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
     override fun onRestart() {
         super.onRestart()
 
+        updateLayout()
+    }
+
+    override fun onSuccess(document: DocumentSnapshot?) {
+        sp.edit().putString(getString(R.string.field_checks), "0 0 0 0 0 0").apply() //0-description 1-date 2-time 3-people 4-price 5-phone
+        finish()
+    }
+
+    override fun onFailure(msg: String?) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun updateLayout() {
         val checked1 = sp.getString(getString(R.string.field_checks), "0 0 0 0 0 0")!!.split(" ")
+        Log.d("checks-test", checked1.toString())
         layout.removeView(btnAdd)
         layout.removeView(extraButton)
+        Log.d("checks-test", "buttons removed")
         if (checked1[0] == "1") {
             if (!checked[getString(R.string.field_description)]!!) {
                 checked[getString(R.string.field_description)] = true
@@ -185,13 +200,5 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
         }
         layout.addView(extraButton)
         layout.addView(btnAdd)
-    }
-
-    override fun onSuccess(document: DocumentSnapshot?) {
-        finish()
-    }
-
-    override fun onFailure(msg: String?) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }

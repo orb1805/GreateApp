@@ -65,7 +65,7 @@ class RegNameActivity : AppCompatActivity() {
                 sharedPrefs.edit().putString(getString(R.string.field_first_name), firstName.text.toString()).apply()
                 sharedPrefs.edit().putString(getString(R.string.field_second_name), secondName.text.toString()).apply()
                 sharedPrefs.edit().putString(getString(R.string.field_third_name), thirdName.text.toString()).apply()
-                sharedPrefs.edit().putInt(getString(R.string.fielde_gender), if(isMan.isChecked) 1 else if(isWoman.isChecked) 0 else -1).apply()
+                sharedPrefs.edit().putInt(getString(R.string.field_gender), if(isMan.isChecked) 1 else if(isWoman.isChecked) 0 else -1).apply()
                 sharedPrefs.edit().putString(getString(R.string.field_birth_date),  birthDate.text.toString()).apply()
                 startActivity(Intent(this, RegLogActivity::class.java))
             }

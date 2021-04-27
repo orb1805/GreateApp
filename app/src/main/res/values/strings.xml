@@ -25,7 +25,9 @@
     <string name="field_second_name">second_name</string>
     <string name="field_third_name">third_name</string>
     <string name="field_birth_date">birth_date</string>
-    <string name="fielde_gender">gender</string>
+    <string name="field_gender">gender</string>
+    <string name="field_edit">edit</string>
+    <string name="field_data_base">data_base</string>
     <string name="shared_prefs_checked">checked</string>
     <string name="shared_prefs_name">file</string>
     <string name="delimiter">/</string>
