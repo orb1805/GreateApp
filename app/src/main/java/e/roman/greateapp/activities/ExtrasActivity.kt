@@ -1,13 +1,13 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import e.roman.greateapp.R
 
 class ExtrasActivity : AppCompatActivity() {
 

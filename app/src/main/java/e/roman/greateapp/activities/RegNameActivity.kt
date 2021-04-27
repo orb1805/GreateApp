@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
@@ -13,6 +13,7 @@ import android.widget.RadioButton
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import e.roman.greateapp.R
 
 class RegNameActivity : AppCompatActivity() {
 

@@ -1,9 +1,8 @@
-    package e.roman.greateapp
+    package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.ColorStateList
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,8 +10,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import com.google.firebase.firestore.FirebaseFirestore
+import e.roman.greateapp.R
 
-class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
+    class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var btnAdd: Button
     private lateinit var layout: LinearLayout
@@ -42,7 +42,9 @@ class MyEventsActivity : AppCompatActivity(), View.OnClickListener {
         }
         //TODO: по-моему дальше пизда начинается
         var count = 0
-        base.collection(getString(R.string.coll_path_registers)).whereArrayContains(getString(R.string.field_users), sharedPrefs.getString(getString(R.string.field_login), "--").toString()).get().addOnSuccessListener { it1 ->
+        base.collection(getString(R.string.coll_path_registers)).whereArrayContains(getString(R.string.field_users), sharedPrefs.getString(getString(
+            R.string.field_login
+        ), "--").toString()).get().addOnSuccessListener { it1 ->
             for (doc in it1){
                 base.collection(getString(R.string.coll_path_events)).document(doc[getString(R.string.field_event)].toString()).get().addOnSuccessListener { it2 ->
                     if(it2[getString(R.string.field_owner)] == sharedPrefs.getString(getString(R.string.field_login), "--").toString()) {

@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.controllers
 
 data class User(
     val login: String,

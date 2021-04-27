@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -14,6 +14,10 @@ import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import e.roman.greateapp.R
+import e.roman.greateapp.controllers.StudentPage
+import e.roman.greateapp.controllers.DataBase
+import e.roman.greateapp.controllers.FireBaseListener
 
 class RegActivity : AppCompatActivity(), FireBaseListener {
 
@@ -146,7 +150,9 @@ class RegActivity : AppCompatActivity(), FireBaseListener {
         sharedPrefs.edit().putString(getString(R.string.field_third_name), thirdNameStr).apply()
         dataBase.collection(getString(R.string.coll_path_universities)).document(univId).get().addOnSuccessListener { document ->
             if(document != null)
-                sharedPrefs.edit().putString(getString(R.string.field_university), document!![getString(R.string.field_name)].toString()).apply()
+                sharedPrefs.edit().putString(getString(R.string.field_university), document!![getString(
+                    R.string.field_name
+                )].toString()).apply()
         }
         sharedPrefs.edit().putString(getString(R.string.field_birth_date), birthDateStr).apply()
         startActivity(Intent(RegActivity@this, MainScreenActivity::class.java))

@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import com.google.firebase.firestore.FirebaseFirestore
+import e.roman.greateapp.R
 
 class FriendsListActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -33,7 +34,9 @@ class FriendsListActivity : AppCompatActivity(), View.OnClickListener {
         for (i in buttons)
             layout.removeView(i)
         buttons.clear()
-        dataBase.collection(getString(R.string.field_users)).document(sharedPrefs.getString(getString(R.string.field_login), "--").toString()).get().addOnSuccessListener {
+        dataBase.collection(getString(R.string.field_users)).document(sharedPrefs.getString(getString(
+            R.string.field_login
+        ), "--").toString()).get().addOnSuccessListener {
             for (friend in it[getString(R.string.field_friends)] as List<*>){
                 buttons.add(Button(layout.context))
                 val params = LinearLayout.LayoutParams(

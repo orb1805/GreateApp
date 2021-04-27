@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
@@ -12,7 +12,7 @@ import android.widget.Button
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlin.math.log
+import e.roman.greateapp.R
 
 class RegLogActivity : AppCompatActivity() {
 

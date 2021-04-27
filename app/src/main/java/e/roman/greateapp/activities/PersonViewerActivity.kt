@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import com.google.firebase.firestore.FirebaseFirestore
+import e.roman.greateapp.R
 
 class PersonViewerActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -39,7 +40,9 @@ class PersonViewerActivity : AppCompatActivity(), View.OnClickListener {
             surnameTV.text = it[getString(R.string.field_second_name)].toString()
             nameTV.text = it[getString(R.string.field_first_name)].toString()
             thirdNameTV.text = it[getString(R.string.field_third_name)].toString()
-            if ((it[getString(R.string.field_friends)] as List<*>).contains(sharedPrefs.getString(getString(R.string.field_login), "--").toString())) {
+            if ((it[getString(R.string.field_friends)] as List<*>).contains(sharedPrefs.getString(getString(
+                    R.string.field_login
+                ), "--").toString())) {
                 removeAddBtn.text = getString(R.string.remove_from_friends)
                 added = true
             }
@@ -53,19 +56,27 @@ class PersonViewerActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(p0: View?) {
         if (added)
-            base.collection(getString(R.string.field_users)).document(sharedPrefs.getString(getString(R.string.field_login), "--").toString()).get().addOnSuccessListener {
+            base.collection(getString(R.string.field_users)).document(sharedPrefs.getString(getString(
+                R.string.field_login
+            ), "--").toString()).get().addOnSuccessListener {
                 val friends = it.get(getString(R.string.field_friends)) as MutableList<String>
                 friends.remove(friendLogin)
-                base.collection(getString(R.string.field_users)).document(sharedPrefs.getString(getString(R.string.field_login), "--").toString()).update(getString(R.string.field_friends), friends)
+                base.collection(getString(R.string.field_users)).document(sharedPrefs.getString(getString(
+                    R.string.field_login
+                ), "--").toString()).update(getString(R.string.field_friends), friends)
                     .addOnSuccessListener { Log.d("check", "success deletion") }
                 added = false
                 removeAddBtn.text = getString(R.string.add_to_friends)
             }
         else
-            base.collection(getString(R.string.field_users)).document(sharedPrefs.getString(getString(R.string.field_login), "--").toString()).get().addOnSuccessListener {
+            base.collection(getString(R.string.field_users)).document(sharedPrefs.getString(getString(
+                R.string.field_login
+            ), "--").toString()).get().addOnSuccessListener {
                 val friends = it.get(getString(R.string.field_friends)) as MutableList<String>
                 friends.add(friendLogin)
-                base.collection(getString(R.string.field_users)).document(sharedPrefs.getString(getString(R.string.field_login), "--").toString()).update(getString(R.string.field_friends), friends)
+                base.collection(getString(R.string.field_users)).document(sharedPrefs.getString(getString(
+                    R.string.field_login
+                ), "--").toString()).update(getString(R.string.field_friends), friends)
                     .addOnSuccessListener { Log.d("check", "success added") }
                 added = true
                 removeAddBtn.text = getString(R.string.remove_from_friends)

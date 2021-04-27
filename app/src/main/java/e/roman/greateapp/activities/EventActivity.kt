@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.FirebaseFirestore
+import e.roman.greateapp.R
 import java.util.HashMap
 
 class EventActivity : AppCompatActivity() {
@@ -57,7 +58,9 @@ class EventActivity : AppCompatActivity() {
         }
         layout.addView(functionalBtn)
         val textView = TextView(this)
-        base.collection(getString(R.string.coll_path_registers)).whereEqualTo(getString(R.string.field_event), intent.getStringExtra(getString(R.string.field_id))?.toString()).get().addOnSuccessListener {
+        base.collection(getString(R.string.coll_path_registers)).whereEqualTo(getString(R.string.field_event), intent.getStringExtra(getString(
+            R.string.field_id
+        ))?.toString()).get().addOnSuccessListener {
             if (it.isEmpty) {
                 textView.text = "ЗАРЕГЕСТРИРОВАНЫ: пустенько немножко"
             }
@@ -94,7 +97,9 @@ class EventActivity : AppCompatActivity() {
 
     private fun registerBtnClickListener(){
         Log.d("check", "Register click")
-        base.collection(getString(R.string.coll_path_registers)).whereEqualTo(getString(R.string.field_event), intent.getStringExtra(getString(R.string.field_id))?.toString()).get().addOnSuccessListener { it ->
+        base.collection(getString(R.string.coll_path_registers)).whereEqualTo(getString(R.string.field_event), intent.getStringExtra(getString(
+            R.string.field_id
+        ))?.toString()).get().addOnSuccessListener { it ->
             if (it.isEmpty) {
                 val document: MutableMap<String, Any?> = HashMap()
                 document[getString(R.string.field_event)] = intent.getStringExtra(getString(R.string.field_id))?.toString()
@@ -119,13 +124,19 @@ class EventActivity : AppCompatActivity() {
                                     base.collection(getString(R.string.field_users)).document(i).get().addOnSuccessListener {
                                         val friends1 = it[getString(R.string.field_friends)] as MutableList<String>
                                         friends1.add(login)
-                                        base.collection(getString(R.string.field_users)).document(i).update(getString(R.string.field_friends), friends1)
+                                        base.collection(getString(R.string.field_users)).document(i).update(getString(
+                                            R.string.field_friends
+                                        ), friends1)
                                     }
                                 }
-                            base.collection(getString(R.string.field_users)).document(login).update(getString(R.string.field_friends), friends)
+                            base.collection(getString(R.string.field_users)).document(login).update(getString(
+                                R.string.field_friends
+                            ), friends)
                             users.add(sharedPrefs.getString(getString(R.string.field_login), "--").toString())
                             val document: MutableMap<String, Any?> = HashMap()
-                            document[getString(R.string.field_event)] = intent.getStringExtra(getString(R.string.field_id))?.toString()
+                            document[getString(R.string.field_event)] = intent.getStringExtra(getString(
+                                R.string.field_id
+                            ))?.toString()
                             document[getString(R.string.field_users)] = users
                             base.collection(getString(R.string.coll_path_registers)).document(doc.id).set(document)
                         }
@@ -135,14 +146,18 @@ class EventActivity : AppCompatActivity() {
     }
 
     private fun unRegisterBtnClickListener(){
-        base.collection(getString(R.string.coll_path_registers)).whereEqualTo(getString(R.string.field_event), intent.getStringExtra(getString(R.string.field_id))?.toString()).get().addOnSuccessListener {
+        base.collection(getString(R.string.coll_path_registers)).whereEqualTo(getString(R.string.field_event), intent.getStringExtra(getString(
+            R.string.field_id
+        ))?.toString()).get().addOnSuccessListener {
             for (doc in it) {
                 val users = doc.get(getString(R.string.field_users)) as MutableList<String>
                 Log.d("check", "$users - $login")
                 users.remove(login)
                 Log.d("check", "$users - $login")
                 Log.d("check", doc.id)
-                base.collection(getString(R.string.coll_path_registers)).document(doc.id).update(getString(R.string.field_users), users).addOnSuccessListener { Log.d("check", "success deletion") }
+                base.collection(getString(R.string.coll_path_registers)).document(doc.id).update(getString(
+                    R.string.field_users
+                ), users).addOnSuccessListener { Log.d("check", "success deletion") }
             }
         }
     }

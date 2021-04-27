@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import e.roman.greateapp.controllers.FireBaseListener
+import e.roman.greateapp.R
 import java.util.*
 
 class EventCreatorActivity : AppCompatActivity(), FireBaseListener {

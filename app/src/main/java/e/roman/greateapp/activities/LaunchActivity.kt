@@ -1,14 +1,12 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.LinearLayout
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlin.math.sign
+import e.roman.greateapp.R
 
 class LaunchActivity : AppCompatActivity() {
 

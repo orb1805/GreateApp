@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import kotlinx.android.synthetic.main.activity_person.*
+import e.roman.greateapp.R
 
 class PersonActivity : AppCompatActivity() {
 
@@ -40,12 +40,30 @@ class PersonActivity : AppCompatActivity() {
         super.onResume()
 
         if(sharedPrefs.getBoolean(getString(R.string.field_signed), false)) {
-            loginTV.text = getString(R.string.field_in_profile, getString(R.string.login), sharedPrefs.getString(getString(R.string.field_login), "--"))
-            dateOfBirthTV.text = getString(R.string.field_in_profile, getString(R.string.birth_date), sharedPrefs.getString(getString(R.string.field_birth_date), "--"))
-            universityTV.text =  getString(R.string.field_in_profile, getString(R.string.university), sharedPrefs.getString(getString(R.string.field_university), "--"))
-            firstNameTV.text =  getString(R.string.field_in_profile, getString(R.string.first_name), sharedPrefs.getString(getString(R.string.field_first_name), "--"))
-            secondNameTV.text =  getString(R.string.field_in_profile, getString(R.string.second_name), sharedPrefs.getString(getString(R.string.field_second_name), "--"))
-            thirdNameTV.text =  getString(R.string.field_in_profile, getString(R.string.third_name), sharedPrefs.getString(getString(R.string.field_third_name), "--"))
+            loginTV.text = getString(
+                R.string.field_in_profile, getString(R.string.login), sharedPrefs.getString(getString(
+                    R.string.field_login
+                ), "--"))
+            dateOfBirthTV.text = getString(
+                R.string.field_in_profile, getString(R.string.birth_date), sharedPrefs.getString(getString(
+                    R.string.field_birth_date
+                ), "--"))
+            universityTV.text =  getString(
+                R.string.field_in_profile, getString(R.string.university), sharedPrefs.getString(getString(
+                    R.string.field_university
+                ), "--"))
+            firstNameTV.text =  getString(
+                R.string.field_in_profile, getString(R.string.first_name), sharedPrefs.getString(getString(
+                    R.string.field_first_name
+                ), "--"))
+            secondNameTV.text =  getString(
+                R.string.field_in_profile, getString(R.string.second_name), sharedPrefs.getString(getString(
+                    R.string.field_second_name
+                ), "--"))
+            thirdNameTV.text =  getString(
+                R.string.field_in_profile, getString(R.string.third_name), sharedPrefs.getString(getString(
+                    R.string.field_third_name
+                ), "--"))
         }
 
         logoutBtn.setOnClickListener {

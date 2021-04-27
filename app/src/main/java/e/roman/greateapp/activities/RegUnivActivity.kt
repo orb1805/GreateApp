@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
@@ -12,10 +12,13 @@ import android.view.View
 import android.webkit.WebView
 import android.widget.Button
 import android.widget.Toast
-import androidx.core.content.edit
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import e.roman.greateapp.R
+import e.roman.greateapp.controllers.StudentPage
+import e.roman.greateapp.controllers.DataBase
+import e.roman.greateapp.controllers.FireBaseListener
 
 class RegUnivActivity : AppCompatActivity(), FireBaseListener {
 
@@ -129,7 +132,9 @@ class RegUnivActivity : AppCompatActivity(), FireBaseListener {
         sharedPrefs.edit().putBoolean(getString(R.string.field_signed), true).apply()
         dataBase.collection(getString(R.string.coll_path_universities)).document(univId).get().addOnSuccessListener { document ->
             if(document != null)
-                sharedPrefs.edit().putString(getString(R.string.field_university), document!![getString(R.string.field_name)].toString()).apply()
+                sharedPrefs.edit().putString(getString(R.string.field_university), document!![getString(
+                    R.string.field_name
+                )].toString()).apply()
         }
         sharedPrefs.edit().putString(getString(R.string.field_birth_date), birthDateStr).apply()
         sharedPrefs.edit().remove(getString(R.string.field_password)).apply()

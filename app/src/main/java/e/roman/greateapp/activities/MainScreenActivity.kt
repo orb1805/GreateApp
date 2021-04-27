@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
@@ -8,7 +8,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import com.google.firebase.firestore.FirebaseFirestore
-import java.io.Serializable
+import e.roman.greateapp.R
+import e.roman.greateapp.controllers.DataBase
 
 class MainScreenActivity : AppCompatActivity(), View.OnClickListener{
 

@@ -13,20 +13,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".PersonViewerActivity" />
-        <activity android:name=".FriendsListActivity" />
-        <activity android:name=".ExtrasActivity" />
-        <activity android:name=".EventActivity" />
-        <activity android:name=".EventCreatorActivity" />
-        <activity android:name=".MyEventsActivity" />
-        <activity android:name=".RegLogActivity" />
-        <activity android:name=".RegUnivActivity" />
-        <activity android:name=".RegNameActivity" />
-        <activity android:name=".PersonActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".MainScreenActivity" />
-        <activity android:name=".RegActivity" />
-        <activity android:name=".LaunchActivity">
+        <activity android:name=".activities.PersonViewerActivity" />
+        <activity android:name=".activities.FriendsListActivity" />
+        <activity android:name=".activities.ExtrasActivity" />
+        <activity android:name=".activities.EventActivity" />
+        <activity android:name=".activities.EventCreatorActivity" />
+        <activity android:name=".activities.MyEventsActivity" />
+        <activity android:name=".activities.RegLogActivity" />
+        <activity android:name=".activities.RegUnivActivity" />
+        <activity android:name=".activities.RegNameActivity" />
+        <activity android:name=".activities.PersonActivity" />
+        <activity android:name=".activities.LoginActivity" />
+        <activity android:name=".activities.MainScreenActivity" />
+        <activity android:name=".activities.RegActivity" />
+        <activity android:name=".activities.LaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

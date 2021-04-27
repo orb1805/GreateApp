@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.controllers
 
 import android.os.Build
 import android.util.Log
@@ -7,6 +7,7 @@ import android.webkit.WebViewClient
 import androidx.annotation.RequiresApi
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import e.roman.greateapp.DataBaseQuerySuccess
 
 class StudentPage(private val url: String, private val webView: WebView) : FireBaseListener {
     interface CheckFormCallback {
@@ -53,7 +54,8 @@ class StudentPage(private val url: String, private val webView: WebView) : FireB
     }
 
     fun checkForm(firstName: String, secondName: String, thirdName: String, universityId: String,
-                birthDate: String, gender: Int, captcha: String, callback: CheckFormCallback) {
+                birthDate: String, gender: Int, captcha: String, callback: CheckFormCallback
+    ) {
 
         var loaded = false
         var jQuery = "javascript:" +

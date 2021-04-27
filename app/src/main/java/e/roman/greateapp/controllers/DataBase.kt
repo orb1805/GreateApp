@@ -1,11 +1,10 @@
-package e.roman.greateapp
+package e.roman.greateapp.controllers
 
-import android.os.Bundle
 import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
+import e.roman.greateapp.toMD5
 import java.io.Serializable
 
 class DataBase : Serializable{

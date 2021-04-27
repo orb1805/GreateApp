@@ -1,4 +1,4 @@
-package e.roman.greateapp
+package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
@@ -12,6 +12,10 @@ import android.widget.Toast
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import e.roman.greateapp.R
+import e.roman.greateapp.controllers.DataBase
+import e.roman.greateapp.controllers.User
+import e.roman.greateapp.toMD5
 
 class LoginActivity : AppCompatActivity() {
 
@@ -73,7 +77,9 @@ class LoginActivity : AppCompatActivity() {
                     document[getString(R.string.field_birth_date)].toString(),
                     "--"
                 )
-                DataBase.getFromCollection(getString(R.string.coll_path_universities), document!![getString(R.string.field_university)].toString(), ::savePerson, ::onFailure)
+                DataBase.getFromCollection(getString(R.string.coll_path_universities), document!![getString(
+                    R.string.field_university
+                )].toString(), ::savePerson, ::onFailure)
             } else {
                 this.onFailure()
             }
