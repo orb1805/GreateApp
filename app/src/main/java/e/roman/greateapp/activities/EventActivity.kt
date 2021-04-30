@@ -2,9 +2,7 @@ package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.util.Log
 import android.widget.Button
 import android.widget.LinearLayout
@@ -12,20 +10,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import e.roman.greateapp.R
 import e.roman.greateapp.controllers.DataBase
-import e.roman.greateapp.controllers.SPController
+import e.roman.greateapp.controllers.MemoryController
 import java.util.HashMap
-import kotlin.math.log
 
 class EventActivity : AppCompatActivity() {
 
     private lateinit var layout: LinearLayout
     private lateinit var functionalBtn: Button
-    private lateinit var spController: SPController
+    private lateinit var memoryController: MemoryController
     private lateinit var login: String
     private var notOwner = true
     private lateinit var users: MutableList<String>
@@ -35,13 +31,13 @@ class EventActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event)
 
-        this.spController = SPController(
+        this.memoryController = MemoryController(
             getSharedPreferences(
                 getString(R.string.shared_prefs_name),
                 Context.MODE_PRIVATE
             )
         )
-        login = spController.get(getString(R.string.field_login), "--")
+        login = memoryController.get(getString(R.string.field_login), "--")
         layout = findViewById(R.id.layout_event)
         addTV(R.string.name, getString(R.string.field_name))
         addTV(R.string.owner, getString(R.string.field_owner))
@@ -105,13 +101,13 @@ class EventActivity : AppCompatActivity() {
             document[getString(R.string.field_event)] =
                 intent.getStringExtra(getString(R.string.field_id))?.toString()
             document[getString(R.string.field_users)] =
-                listOf(spController.get(getString(R.string.field_login), "--"))
+                listOf(memoryController.get(getString(R.string.field_login), "--"))
             DataBase.addDocumnet(getString(R.string.coll_path_registers), document)
         } else {
             for (doc in documents) {
                 this.doc = doc
                 users = doc.get(getString(R.string.field_users)) as MutableList<String>
-                val login = spController.get(getString(R.string.field_id), "--")
+                val login = memoryController.get(getString(R.string.field_id), "--")
                 var flag = true
                 for (i in users) {
                     if (i == login)
@@ -131,7 +127,7 @@ class EventActivity : AppCompatActivity() {
                 DataBase.getFromCollection(getString(R.string.field_users), i, ::addUserAsFriend, ::onFailure)
             }
         DataBase.updateDocument(getString(R.string.field_users), login, getString(R.string.field_friends), friends)
-        users.add(spController.get(getString(R.string.field_login), "--"))
+        users.add(memoryController.get(getString(R.string.field_login), "--"))
         val document: MutableMap<String, Any?> = HashMap()
         document[getString(R.string.field_event)] = intent.getStringExtra(
             getString(

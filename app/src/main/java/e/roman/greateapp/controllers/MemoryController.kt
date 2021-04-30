@@ -3,7 +3,7 @@ package e.roman.greateapp.controllers
 import android.content.SharedPreferences
 import e.roman.greateapp.R
 
-class SPController(private val sharedPreferences: SharedPreferences) {
+class MemoryController(private val sharedPreferences: SharedPreferences) {
 
     fun put(name: String, value: String) {
         sharedPreferences.edit().putString(

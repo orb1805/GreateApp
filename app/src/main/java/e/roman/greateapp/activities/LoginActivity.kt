@@ -2,7 +2,6 @@ package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,11 +9,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import e.roman.greateapp.R
 import e.roman.greateapp.controllers.DataBase
-import e.roman.greateapp.controllers.SPController
+import e.roman.greateapp.controllers.MemoryController
 import e.roman.greateapp.controllers.User
 import e.roman.greateapp.toMD5
 
@@ -24,7 +22,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var btnLogin: Button
     private lateinit var login: EditText
     private lateinit var password: EditText
-    private lateinit var spController: SPController
+    private lateinit var memoryController: MemoryController
     private lateinit var person: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
         this.btnLogin = findViewById(R.id.btn_login)
         this.login = findViewById(R.id.login)
         this.password = findViewById(R.id.password)
-        this.spController = SPController(
+        this.memoryController = MemoryController(
             getSharedPreferences(
                 getString(R.string.shared_prefs_name),
                 Context.MODE_PRIVATE
@@ -95,16 +93,16 @@ class LoginActivity : AppCompatActivity() {
     private fun savePerson(doc: DocumentSnapshot?) {
         Log.d("check22", "onSuccess start")
         if (doc != null) {
-            spController.put(
+            memoryController.put(
                 getString(R.string.field_university),
                 doc!![getString(R.string.field_name)].toString()
             )
-            spController.put(getString(R.string.field_signed), true)
-            spController.put(getString(R.string.field_login), this.login.text.toString())
-            spController.put(getString(R.string.field_first_name), person.name)
-            spController.put(getString(R.string.field_second_name), person.surname)
-            spController.put(getString(R.string.field_third_name), person.thirdName)
-            spController.put(getString(R.string.field_birth_date), person.birthDate)
+            memoryController.put(getString(R.string.field_signed), true)
+            memoryController.put(getString(R.string.field_login), this.login.text.toString())
+            memoryController.put(getString(R.string.field_first_name), person.name)
+            memoryController.put(getString(R.string.field_second_name), person.surname)
+            memoryController.put(getString(R.string.field_third_name), person.thirdName)
+            memoryController.put(getString(R.string.field_birth_date), person.birthDate)
             DataBase.getWholeCollection(
                 getString(R.string.coll_path_events),
                 ::startMainActivity,
@@ -129,7 +127,7 @@ class LoginActivity : AppCompatActivity() {
     private fun onFailure() {
         Log.d("check22", "onFailure start")
         Toast.makeText(this, "Ошибка", Toast.LENGTH_SHORT).show()
-        spController.put(getString(R.string.field_signed), false)
+        memoryController.put(getString(R.string.field_signed), false)
     }
 
     override fun finish() {

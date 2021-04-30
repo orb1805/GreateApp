@@ -8,14 +8,17 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import e.roman.greateapp.R
+import e.roman.greateapp.controllers.DataBase
+import e.roman.greateapp.controllers.MemoryController
 
 class FriendsListActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var layout: LinearLayout
-    private lateinit var dataBase: FirebaseFirestore
-    private lateinit var sharedPrefs : SharedPreferences
+    private lateinit var memoryController: MemoryController
     private lateinit var buttons: MutableList<Button>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,8 +26,7 @@ class FriendsListActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_friends_list)
 
         layout = findViewById(R.id.layout_friends)
-        dataBase = FirebaseFirestore.getInstance()
-        this.sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
+        memoryController = MemoryController(getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE))
         buttons = mutableListOf()
     }
 
@@ -34,21 +36,21 @@ class FriendsListActivity : AppCompatActivity(), View.OnClickListener {
         for (i in buttons)
             layout.removeView(i)
         buttons.clear()
-        dataBase.collection(getString(R.string.field_users)).document(sharedPrefs.getString(getString(
-            R.string.field_login
-        ), "--").toString()).get().addOnSuccessListener {
-            for (friend in it[getString(R.string.field_friends)] as List<*>){
-                buttons.add(Button(layout.context))
-                val params = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    wallpaperDesiredMinimumHeight / 6
-                )
-                params.topMargin = 80
-                buttons.last().layoutParams = params
-                buttons.last().text = friend.toString()
-                layout.addView(buttons.last())
-                buttons.last().setOnClickListener(this)
-            }
+        DataBase.getFromCollection(getString(R.string.field_users), memoryController.get(getString(R.string.field_login), "--"), ::makeFriendsButtons, ::onFailure)
+    }
+
+    private fun makeFriendsButtons(document: DocumentSnapshot) {
+        for (friend in document[getString(R.string.field_friends)] as List<*>) {
+            buttons.add(Button(layout.context))
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                wallpaperDesiredMinimumHeight / 6
+            )
+            params.topMargin = 80
+            buttons.last().layoutParams = params
+            buttons.last().text = friend.toString()
+            layout.addView(buttons.last())
+            buttons.last().setOnClickListener(this)
         }
     }
 
@@ -59,5 +61,9 @@ class FriendsListActivity : AppCompatActivity(), View.OnClickListener {
         bundle.putString(getString(R.string.field_friend_login), text)
         intent.putExtras(bundle)
         startActivity(intent)
+    }
+
+    private fun onFailure() {
+        Toast.makeText(this, "Ошибка", Toast.LENGTH_SHORT).show()
     }
 }

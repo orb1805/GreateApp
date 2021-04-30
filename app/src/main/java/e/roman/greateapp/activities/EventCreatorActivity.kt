@@ -2,18 +2,16 @@ package e.roman.greateapp.activities
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
 import e.roman.greateapp.controllers.FireBaseListener
 import e.roman.greateapp.R
 import e.roman.greateapp.controllers.DataBase
-import e.roman.greateapp.controllers.SPController
+import e.roman.greateapp.controllers.MemoryController
 import java.util.*
 
 class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
@@ -21,12 +19,12 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
     private lateinit var btnAdd: Button
     private lateinit var extraButton: Button
     private lateinit var etName: EditText
-    private lateinit var spController: SPController
+    private lateinit var memoryController: MemoryController
     private var isChanged = false
     private lateinit var extrasActivity: ExtrasActivity
     private lateinit var checked: MutableMap<String, Boolean>
     private lateinit var layout: LinearLayout
-    private lateinit var spControllerChecked: SPController
+    private lateinit var memoryControllerChecked: MemoryController
 
     private lateinit var etdescription: EditText
     private lateinit var etdate: EditText
@@ -40,7 +38,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
         setContentView(R.layout.activity_event_creator)
 
         //sp = getSharedPreferences(getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE)
-        spControllerChecked = SPController(getSharedPreferences(getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE))
+        memoryControllerChecked = MemoryController(getSharedPreferences(getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE))
         layout = findViewById(R.id.layout)
         btnAdd = Button(this)
         extraButton = Button(this)
@@ -53,9 +51,9 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
         btnAdd.text = getString(R.string.add)//"ДОБАВИТЬ"
         layout.addView(extraButton)
         layout.addView(btnAdd)
-        spController = SPController(getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE))
+        memoryController = MemoryController(getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE))
         checked = mutableMapOf()
-        if (/*sp.getBoolean(getString(R.string.field_edit), false)*/ spControllerChecked.get(getString(R.string.field_edit), false)) {
+        if (/*sp.getBoolean(getString(R.string.field_edit), false)*/ memoryControllerChecked.get(getString(R.string.field_edit), false)) {
             updateLayout()
         } else {
             checked[getString(R.string.field_description)] = false
@@ -74,7 +72,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                 val doc: MutableMap<String, Any?> = HashMap()
                 doc[getString(R.string.field_name)] = name
                 //doc[getString(R.string.field_owner)] = sharedPrefs.getString(getString(R.string.field_login), "--").toString()
-                doc[getString(R.string.field_owner)] = spController.get(getString(R.string.field_login), "--")
+                doc[getString(R.string.field_owner)] = memoryController.get(getString(R.string.field_login), "--")
 
                 if (checked[getString(R.string.field_description)]!!) {
                     doc[getString(R.string.field_description)] = etdescription.text.toString()
@@ -94,9 +92,9 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
                 if (checked[getString(R.string.field_phone)]!!) {
                     doc[getString(R.string.field_phone)] = etphone.text.toString()
                 }
-                doc[getString(R.string.field_checks)] = spControllerChecked.get(getString(R.string.field_checks), "0 0 0 0 0 0")
+                doc[getString(R.string.field_checks)] = memoryControllerChecked.get(getString(R.string.field_checks), "0 0 0 0 0 0")
                 DataBase.addDocumnet(getString(R.string.coll_path_events), doc)
-                spController.put("new name", name)
+                memoryController.put("new name", name)
             }
             else this.onFailure("Заполните все поля")
         }
@@ -115,7 +113,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
 
     override fun onSuccess(document: DocumentSnapshot?) {
         //sp.edit().putString(getString(R.string.field_checks), "0 0 0 0 0 0").apply() //0-description 1-date 2-time 3-people 4-price 5-phone
-        spControllerChecked.put(getString(R.string.field_checks), "0 0 0 0 0 0")
+        memoryControllerChecked.put(getString(R.string.field_checks), "0 0 0 0 0 0")
         finish()
     }
 
@@ -124,7 +122,7 @@ class EventCreatorActivity : AppCompatActivity(), FireBaseListener {
     }
 
     private fun updateLayout() {
-        val checked1 = spControllerChecked.get(getString(R.string.field_checks), "0 0 0 0 0 0").split(" ")
+        val checked1 = memoryControllerChecked.get(getString(R.string.field_checks), "0 0 0 0 0 0").split(" ")
         Log.d("checks-test", checked1.toString())
         layout.removeView(btnAdd)
         layout.removeView(extraButton)

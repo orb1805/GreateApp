@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.SharedMemory
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import e.roman.greateapp.R
+import e.roman.greateapp.controllers.MemoryController
 
 class ExtrasActivity : AppCompatActivity() {
 
@@ -18,14 +20,16 @@ class ExtrasActivity : AppCompatActivity() {
     private lateinit var peopleButton: Button
     private lateinit var priceButton: Button
     private lateinit var phoneButton: Button
-    private lateinit var sp: SharedPreferences
+    //private lateinit var sp: SharedPreferences
+    private lateinit var memoryController: MemoryController
     private lateinit var checked: MutableList<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_extras)
 
-        sp = getSharedPreferences(getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE)
+        //sp = getSharedPreferences(getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE)
+        memoryController = MemoryController(getSharedPreferences(getString(R.string.shared_prefs_checked), Context.MODE_PRIVATE))
         timeLayout = findViewById(R.id.layout_time)
         descriptionButton = findViewById(R.id.btn_description)
         dateButton = findViewById(R.id.btn_date)
@@ -34,7 +38,8 @@ class ExtrasActivity : AppCompatActivity() {
         priceButton = findViewById(R.id.btn_price)
         phoneButton = findViewById(R.id.btn_number)
 
-        checked = sp.getString(getString(R.string.field_checks), "0 0 0 0 0 0")!!.split(" ") as MutableList<String>
+        //checked = sp.getString(getString(R.string.field_checks), "0 0 0 0 0 0")!!.split(" ") as MutableList<String>
+        checked = memoryController.get(getString(R.string.field_checks), "0 0 0 0 0 0").split(" ") as MutableList<String>
         descriptionButton.text = if (checked[0] == "0") getString(R.string.extra_plus)
         else getString(R.string.extra_minus)
         if (checked[1] == "0")
@@ -120,7 +125,8 @@ class ExtrasActivity : AppCompatActivity() {
     }
 
     override fun finish() {
-        sp.edit().putString(getString(R.string.field_checks), "${checked[0]} ${checked[1]} ${checked[2]} ${checked[3]} ${checked[4]} ${checked[5]}").apply()
+        //sp.edit().putString(getString(R.string.field_checks), "${checked[0]} ${checked[1]} ${checked[2]} ${checked[3]} ${checked[4]} ${checked[5]}").apply()
+        memoryController.put(getString(R.string.field_checks), "${checked[0]} ${checked[1]} ${checked[2]} ${checked[3]} ${checked[4]} ${checked[5]}")
         super.finish()
     }
 }
