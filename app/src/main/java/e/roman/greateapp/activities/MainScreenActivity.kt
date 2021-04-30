@@ -21,7 +21,6 @@ class MainScreenActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var btnMyEvents: Button
     private lateinit var layout: LinearLayout
 
-    //private lateinit var base: FirebaseFirestore
     private lateinit var buttons: MutableList<Button>
     private lateinit var namesStr: String
     private lateinit var names: MutableList<String>
@@ -34,7 +33,6 @@ class MainScreenActivity : AppCompatActivity(), View.OnClickListener {
         btnPerson = findViewById(R.id.btn_person)
         btnMyEvents = findViewById(R.id.btn_my_events)
         layout = findViewById(R.id.layout)
-        //base = DataBase.dataBase//FirebaseFirestore.getInstance()
         buttons = mutableListOf()
         namesStr = intent.getStringExtra(getString(R.string.field_names))
         if (namesStr != "") {
@@ -92,35 +90,6 @@ class MainScreenActivity : AppCompatActivity(), View.OnClickListener {
             ::startEventView,
             ::onFailure
         )
-        /*
-        var owner = "--"
-        val intent = Intent(this, EventActivity::class.java)
-        val bundle = Bundle()
-        base.collection(getString(R.string.coll_path_events)).whereEqualTo(getString(R.string.field_name), text).get().addOnSuccessListener {
-            for (doc in it){
-                owner = doc[getString(R.string.field_owner)].toString()
-                bundle.putString(getString(R.string.field_name), text)
-                bundle.putString(getString(R.string.field_owner), owner)
-                bundle.putString(getString(R.string.coll_path_universities), doc[getString(R.string.coll_path_universities)].toString())
-                val checks = doc[getString(R.string.field_checks)].toString().split(" ") //0-description 1-date 2-time 3-people 4-price 5-phone
-                bundle.putString(getString(R.string.field_checks), doc[getString(R.string.field_checks)].toString())
-                if (checks[0] == "1")
-                    bundle.putString(getString(R.string.field_description), doc[getString(R.string.field_description)].toString())
-                if (checks[1] == "1")
-                    bundle.putString(getString(R.string.field_date), doc[getString(R.string.field_date)].toString())
-                if (checks[2] == "1")
-                    bundle.putString(getString(R.string.field_time), doc[getString(R.string.field_time)].toString())
-                if (checks[3] == "1")
-                    bundle.putString(getString(R.string.field_people), doc[getString(R.string.field_people)].toString())
-                if (checks[4] == "1")
-                    bundle.putString(getString(R.string.field_price), doc[getString(R.string.field_price)].toString())
-                if (checks[5] == "1")
-                    bundle.putString(getString(R.string.field_phone), doc[getString(R.string.field_phone)].toString())
-                bundle.putString(getString(R.string.field_id), doc.id)
-                intent.putExtras(bundle)
-                startActivity(intent)
-            }
-        }*/
     }
 
     private fun startEventView(documents: QuerySnapshot) {
