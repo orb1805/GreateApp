@@ -7,30 +7,33 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.firebase.firestore.FirebaseFirestore
 import e.roman.greateapp.R
+import e.roman.greateapp.controllers.MemoryController
 
 class LaunchActivity : AppCompatActivity() {
 
-    private lateinit var sharedPrefs : SharedPreferences
+    //private lateinit var sharedPrefs : SharedPreferences
+    private lateinit var memoryController: MemoryController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_launch)
 
         //инциализация всех ресурсов
-        sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
+        //sharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE)
+        memoryController = MemoryController(getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE))
     }
 
     override fun onResume() {
         super.onResume()
 
         val intent : Intent
-        val signed = sharedPrefs.getBoolean(getString(R.string.field_signed), false)
+        val signed = memoryController.get(getString(R.string.field_signed), false) //sharedPrefs.getBoolean(getString(R.string.field_signed), false)
         if(signed){
             //TODO: проверка на совпадение ранее введенного пароля с тем, что есть в базе
             intent = Intent(this, MainScreenActivity::class.java)
             var names = ""
             val base = FirebaseFirestore.getInstance()
-            val login = sharedPrefs.getString(getString(R.string.field_login), "--")
+            val login = memoryController.get(getString(R.string.field_login), "--") //sharedPrefs.getString(getString(R.string.field_login), "--")
             base.collection(getString(R.string.coll_path_events)).get().addOnSuccessListener {
                 for (doc in it)
                     if (doc[getString(R.string.field_owner)].toString() != login)
